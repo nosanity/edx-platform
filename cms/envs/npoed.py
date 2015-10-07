@@ -22,7 +22,7 @@ SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
 SOCIAL_AUTH_LOGOUT_URL = "%s/logout/" % SSO_NPOED_URL #'http://sso.rnoep.raccoongang.com/logout/'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 
-MIDDLEWARE_CLASSES += ('sso_edx_npoed.middleware.SeamlessAuthorization', )
+#MIDDLEWARE_CLASSES += ('sso_edx_npoed.middleware.SeamlessAuthorization', )
 
 # We should login always with npoed-sso. There is specific backend for cms
 # from sso_edx_npoed.backends.npoed import NpoedBackendCMS
@@ -61,3 +61,13 @@ if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
 
 EVMS_URL = ENV_TOKENS.get('EVMS_URL')
 EVMS_API_KEY = AUTH_TOKENS.get('EVMS_API_KEY')
+DEBUG=False
+# STATICFILES_DIRS = (
+#     '/edx/var/edxapp/staticfiles',
+# )
+# from django.conf import settings
+# for i in dir(settings):
+#     if 'static' in i.lower():
+#         print i, getattr(settings, i)
+#
+# print '----DEBUG', settings.DEBUG
