@@ -97,6 +97,7 @@ from django.utils.http import urlquote_plus
 
       %if not course.disable_progress_graph:
         <div class="grade-detail-graph" id="grade-detail-graph" aria-hidden="true"></div>
+        <div class="pull-right"><a href="javascript:void(0);" class="btn btn-blue" style="background: green;" onClick="window.open('https://openedu.ru/faq-progress', 'FAQ', 'height=' + window.innerHeight * 0.66 + ',width=' + window.innerWidth * 0.66 + ',scrollbars=yes,resizable=yes');">${_(u'Нужна помощь?')}</a></div><div class=clearfix'></div>
       %endif
 
       % if credit_course_requirements:
