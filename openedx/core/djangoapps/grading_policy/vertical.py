@@ -14,7 +14,7 @@ from student.models import anonymous_id_for_user
 from xmodule import graders, block_metadata_utils
 from xmodule.modulestore.django import modulestore
 from openedx.core.lib.gating import api as gating_api
-from utils import MaxScoresCache, grade_for_percentage, get_score, possibly_scored
+from utils import MaxScoresCache, grade_for_percentage, get_score, possibly_scored, possibly_scored_with_visibility_restrictions
 from course_blocks.api import get_course_blocks
 from submissions import api as sub_api  # installed from the edx-submissions repository
 
@@ -279,7 +279,7 @@ class VerticalGrading(object):
                     scores = []
 
                     for descendant_key in course_structure.post_order_traversal(
-                            filter_func=possibly_scored,
+                            filter_func=possibly_scored_with_visibility_restrictions(scorable_locations),
                             start_node=curr_block.location
                     ):
                         descendant = course_structure[descendant_key]

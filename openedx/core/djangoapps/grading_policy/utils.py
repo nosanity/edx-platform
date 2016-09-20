@@ -173,6 +173,16 @@ def possibly_scored(usage_key):
     return usage_key.block_type in block_types_with_scores()
 
 
+def possibly_scored_with_visibility_restrictions(scorable_locations):
+    """
+    Returns filter function for post_order_traversal.
+    Only blocks that are in scorable_locations permitted
+    """
+    def _inner(usage_key):
+        return possibly_scored(usage_key) and any(usage_key.name == getattr(i, 'name', '') for i in scorable_locations)
+    return _inner
+
+
 def grading_context_for_course(course):
     """
     Same as grading_context, but takes in a course object.

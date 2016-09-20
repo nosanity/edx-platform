@@ -13,7 +13,7 @@ from courseware.model_data import ScoresClient
 from student.models import anonymous_id_for_user
 from util.db import outer_atomic
 from xmodule import graders, block_metadata_utils
-from .utils import MaxScoresCache, get_score, ProgressSummary, grade_for_percentage, possibly_scored
+from .utils import MaxScoresCache, get_score, ProgressSummary, grade_for_percentage, possibly_scored, possibly_scored_with_visibility_restrictions
 
 log = logging.getLogger("openedx.grading_policy")
 
@@ -206,7 +206,7 @@ class SequentialGrading(object):
                 scores = []
 
                 for descendant_key in course_structure.post_order_traversal(
-                        filter_func=possibly_scored,
+                        filter_func=possibly_scored_with_visibility_restrictions(scorable_locations),
                         start_node=section_key,
                 ):
                     descendant = course_structure[descendant_key]
