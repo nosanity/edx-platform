@@ -69,7 +69,7 @@ class Env(object):
     SERVER_HOST = os.environ.get('BOK_CHOY_HOSTNAME', '0.0.0.0')
     USING_DOCKER = SERVER_HOST != '0.0.0.0'
     SETTINGS = 'bok_choy_docker' if USING_DOCKER else 'bok_choy'
-    DEVSTACK_SETTINGS = 'devstack_docker' if USING_DOCKER else 'devstack'
+    DEVSTACK_SETTINGS = 'devstack_docker' if USING_DOCKER else 'npoed_dev'
     TEST_SETTINGS = 'test_docker' if USING_DOCKER else 'test'
 
     BOK_CHOY_SERVERS = {

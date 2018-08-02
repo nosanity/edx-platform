@@ -15,7 +15,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
     'use strict';
     var CourseOutlineXBlockModal, SettingsXBlockModal, PublishXBlockModal, AbstractEditor, BaseDateEditor,
         ReleaseDateEditor, DueDateEditor, GradingEditor, PublishEditor, AbstractVisibilityEditor, StaffLockEditor,
-        ContentVisibilityEditor, TimedExaminationPreferenceEditor, AccessEditor, ShowCorrectnessEditor;
+        ContentVisibilityEditor, TimedExaminationPreferenceEditor, AccessEditor, ShowCorrectnessEditor, WeightEditor;
 
     CourseOutlineXBlockModal = BaseModal.extend({
         events: _.extend({}, BaseModal.prototype.events, {
@@ -232,6 +232,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                 xblockInfo: this.model,
                 xblockType: this.options.xblockType,
                 enable_proctored_exam: this.options.enable_proctored_exams,
+                proctoring_services: this.model.attributes.proctoring_services,
                 enable_timed_exam: this.options.enable_timed_exams
             }, this.getContext()));
 
@@ -352,9 +353,11 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                 this.$('.field-time-limit input').val('00:30');
             }
             if (showRulesField) {
+                this.$('.field-proctoring-service').show();
                 this.$('.field-exam-review-rules').show();
             }
             else {
+                this.$('.field-proctoring-service').hide();
                 this.$('.field-exam-review-rules').hide();
             }
         },
@@ -391,10 +394,12 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
             this.setExamTime(this.model.get('default_time_limit_minutes'));
 
             this.setReviewRules(this.model.get('exam_review_rules'));
+            this.setProctoringService(this.model.get('exam_proctoring_system'));
         },
         setExamType: function(is_time_limited, is_proctored_exam, is_practice_exam) {
             this.$('.field-time-limit').hide();
             this.$('.field-exam-review-rules').hide();
+            this.$('.field-proctoring-service').hide();
 
             if (!is_time_limited) {
                 this.$('input.no_special_exam').prop('checked', true);
@@ -409,6 +414,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                 } else {
                     this.$('input.proctored_exam').prop('checked', true);
                     this.$('.field-exam-review-rules').show();
+                    this.$('.field-proctoring-service').show();
                 }
             } else {
                 // Since we have an early exit at the top of the method
@@ -423,6 +429,9 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
         },
         setReviewRules: function(value) {
             this.$('.field-exam-review-rules textarea').val(value);
+        },
+        setProctoringService: function(value) {
+            this.$('#proctoring-service').val(value);
         },
         isValidTimeLimit: function(time_limit) {
             var pattern = new RegExp('^\\d{1,2}:[0-5][0-9]$');
@@ -449,6 +458,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
             var is_proctored_exam;
             var time_limit = this.getExamTimeLimit();
             var exam_review_rules = this.$('.field-exam-review-rules textarea').val();
+            var exam_proctoring_system = this.$('#proctoring-service').val();
 
             if (this.$('input.no_special_exam').is(':checked')) {
                 is_time_limited = false;
@@ -473,6 +483,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                     'is_practice_exam': is_practice_exam,
                     'is_time_limited': is_time_limited,
                     'exam_review_rules': exam_review_rules,
+                    'exam_proctoring_system': exam_proctoring_system,
                     // We have to use the legacy field name
                     // as the Ajax handler directly populates
                     // the xBlocks fields. We will have to
@@ -764,6 +775,23 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
         }
     });
 
+    WeightEditor = AbstractEditor.extend({
+        templateName: 'weight-editor',
+
+        setValue: function (value) {
+            this.$('#weight').val(value);
+        },
+
+        getValue: function () {
+            return this.$('#weight').val();
+        },
+
+        getRequestData: function () {
+            return {
+                'metadata': {'weight': this.getValue()}
+            };
+         }
+     });
     return {
         getModal: function(type, xblockInfo, options) {
             if (type === 'edit') {
@@ -782,7 +810,12 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                 editors: []
             };
             if (xblockInfo.isVertical()) {
-                editors = [StaffLockEditor];
+                if('vertical_grading' in xblockInfo.attributes){
+                    editors = [DueDateEditor, WeightEditor,StaffLockEditor];
+                } else{
+                    editors = [StaffLockEditor];
+                }
+                    xblockInfo['format'] = options.parentInfo.get('format');
             } else {
                 tabs = [
                     {
@@ -800,7 +833,11 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                     tabs[0].editors = [ReleaseDateEditor];
                     tabs[1].editors = [StaffLockEditor];
                 } else if (xblockInfo.isSequential()) {
-                    tabs[0].editors = [ReleaseDateEditor, GradingEditor, DueDateEditor];
+                    if('vertical_grading' in xblockInfo.attributes) {
+                        tabs[0].editors = [ReleaseDateEditor, GradingEditor];
+                    } else {
+                        tabs[0].editors = [ReleaseDateEditor, GradingEditor, DueDateEditor];
+                    }
                     tabs[1].editors = [ContentVisibilityEditor, ShowCorrectnessEditor];
 
                     if (options.enable_proctored_exams || options.enable_timed_exams) {

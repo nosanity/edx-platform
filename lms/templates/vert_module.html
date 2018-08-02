@@ -3,6 +3,9 @@
 %if unit_title:
   <h2 class="hd hd-2 unit-title">${unit_title}</h2>
 % endif
+% if ('weight_string' in xblock_context):
+  <h4 class="hd hd-4">${xblock_context['weight_string']}</h4>
+% endif
 
 % if show_bookmark_button:
     <%include file='bookmark_button.html' args="bookmark_id=bookmark_id, is_bookmarked=bookmarked"/>

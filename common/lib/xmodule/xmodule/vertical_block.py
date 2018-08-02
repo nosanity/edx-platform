@@ -8,6 +8,7 @@ from lxml import etree
 from xblock.core import XBlock
 from xblock.fragment import Fragment
 
+from npoed_grading_features import enable_vertical_grading
 from xmodule.mako_module import MakoTemplateBlockBase
 from xmodule.progress import Progress
 from xmodule.seq_module import SequenceFields
@@ -22,6 +23,7 @@ log = logging.getLogger(__name__)
 CLASS_PRIORITY = ['video', 'problem']
 
 
+@enable_vertical_grading
 @XBlock.needs('user', 'bookmarks')
 class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParserMixin, MakoTemplateBlockBase, XBlock):
     """

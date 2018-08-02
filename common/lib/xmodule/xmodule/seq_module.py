@@ -121,6 +121,13 @@ class ProctoringFields(object):
         scope=Scope.settings,
     )
 
+    exam_proctoring_system = String(
+        display_name=_("Proctoring system"),
+        help=_(""),
+        default='',
+        scope=Scope.settings,
+    )
+
     def _get_course(self):
         """
         Return course by course id.
@@ -152,6 +159,16 @@ class ProctoringFields(object):
     def is_proctored_exam(self, value):
         """ Alias the is_proctored_enabled field to the more legible is_proctored_exam """
         self.is_proctored_enabled = value
+
+    @property
+    def available_proctoring_services(self):
+        """
+        Returns the list of proctoring services for the course if available, else None
+        """
+        if self._get_course().available_proctoring_services:
+            return [item.strip() for item in self._get_course().available_proctoring_services.split(",")]
+        else:
+            return None
 
 
 @XBlock.wants('proctoring')
@@ -467,6 +484,10 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
             course_id = self.runtime.course_id
             content_id = self.location
 
+            available_proctoring_services = self.available_proctoring_services
+            if self.exam_proctoring_system and len(available_proctoring_services) > 1:
+                available_proctoring_services = [self.exam_proctoring_system]
+
             context = {
                 'display_name': self.display_name,
                 'default_time_limit_mins': (
@@ -475,6 +496,7 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
                 ),
                 'is_practice_exam': self.is_practice_exam,
                 'allow_proctoring_opt_out': self.allow_proctoring_opt_out,
+                'available_proctoring_services': available_proctoring_services,
                 'due_date': self.due
             }
 

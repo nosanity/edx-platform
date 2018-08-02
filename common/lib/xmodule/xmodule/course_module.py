@@ -14,6 +14,7 @@ from path import Path as path
 from pytz import utc
 from xblock.fields import Scope, List, String, Dict, Boolean, Integer, Float
 
+from npoed_grading_features import enable_vertical_grading
 from xmodule import course_metadata_utils
 from xmodule.course_metadata_utils import DEFAULT_START_DATE
 from xmodule.graders import grader_from_conf
@@ -166,6 +167,7 @@ class TextbookList(List):
         return json_data
 
 
+@enable_vertical_grading
 class CourseFields(object):
     lti_passports = List(
         display_name=_("LTI Passports"),
@@ -858,6 +860,13 @@ class CourseFields(object):
             "more of the base requirements, such as testing, accessibility, internationalization, and documentation."
         ),
         scope=Scope.settings, default=False
+    )
+
+    available_proctoring_services = String(
+        display_name=_("Available Proctoring services"),
+        help=_("Comma-separated list of services available for this course."),
+        default="",
+        scope=Scope.settings,
     )
 
 

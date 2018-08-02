@@ -13,9 +13,9 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db import IntegrityError, transaction
 from django.db.models.signals import m2m_changed, post_save
-from django.dispatch import receiver
+from django.dispatch import receiver, Signal
 from django.http import Http404
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from eventtracking import tracker
 from request_cache.middleware import request_cached
 from student.models import get_user_by_username_or_email
@@ -30,6 +30,7 @@ from .models import (
 )
 
 log = logging.getLogger(__name__)
+COURSE_COHORT_ADD = Signal(providing_args=["group_name", "course_id", "username"])
 
 
 @receiver(post_save, sender=CourseUserGroup)
@@ -465,6 +466,7 @@ def add_user_to_cohort(cohort, username_or_email):
                 "previous_cohort_name": membership.previous_cohort_name,
             }
         )
+        COURSE_COHORT_ADD.send(sender=None, group_name=cohort.name, course_id=cohort.course_id, username=user.username)
         return (user, membership.previous_cohort_name, False)
     except User.DoesNotExist as ex:
         # If username_or_email is an email address, store in database.

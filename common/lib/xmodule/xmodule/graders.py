@@ -15,6 +15,8 @@ from datetime import datetime
 from contracts import contract
 from pytz import UTC
 
+from npoed_grading_features import enable_vertical_grading
+
 log = logging.getLogger("edx.courseware")
 
 
@@ -288,6 +290,7 @@ class WeightedSubsectionsGrader(CourseGrader):
         }
 
 
+@enable_vertical_grading
 class AssignmentFormatGrader(CourseGrader):
     """
     Grades all sections matching the format 'type' with an equal weight. A specified
