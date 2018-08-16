@@ -13,6 +13,8 @@ from openedx.core.djangoapps.user_api.preferences.api import (
     get_user_preference,
     set_user_preference
 )
+from xmodule.modulestore.django import modulestore
+from util.request import course_id_from_url
 
 
 class LanguagePreferenceMiddleware(object):
@@ -22,8 +24,13 @@ class LanguagePreferenceMiddleware(object):
     Ensures that, once set, a user's preferences are reflected in the page
     whenever they are logged in.
     """
-
     def process_request(self, request):
+        if settings.FEATURES.get('USE_LANGUAGE_FROM_COURSE_SETTINGS', False) and 'lms' in settings.ROOT_URLCONF:
+            self._update_lang_from_course_settings(request)
+        else:
+            self._process_request(request)
+
+    def _process_request(self, request):
         """
         If a user's UserPreference contains a language preference, use the user's preference.
         Save the current language preference cookie as the user's preferred language.
@@ -51,6 +58,9 @@ class LanguagePreferenceMiddleware(object):
                 del request.session[LANGUAGE_SESSION_KEY]
 
     def process_response(self, request, response):
+        if settings.FEATURES.get('USE_LANGUAGE_FROM_COURSE_SETTINGS', False) and 'lms' in settings.ROOT_URLCONF:
+            return response
+
         # If the user is logged in, check for their language preference
         if getattr(request, 'user', None) and request.user.is_authenticated():
             user_pref = None
@@ -82,3 +92,12 @@ class LanguagePreferenceMiddleware(object):
                 )
 
         return response
+
+    def _update_lang_from_course_settings(self, request):
+        course_key = course_id_from_url(request.path)
+        if course_key:
+            course = modulestore().get_course(course_key)
+            if course and hasattr(course, 'language') and course.language:
+                request.session[LANGUAGE_SESSION_KEY] = course.language
+                return True
+        return False
