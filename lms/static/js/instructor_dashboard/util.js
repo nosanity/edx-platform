@@ -3,9 +3,9 @@
 (function() {
     'use strict';
     var IntervalManager, KeywordValidator,
-        createEmailContentTable, createEmailMessageViews,
+        createEmailContentTable, createEmailDelayContentTable, createEmailMessageViews,
         findAndAssert, pWrapper, plantInterval, plantTimeout,
-        sentToFormatter, setupCopyEmailButton, subjectFormatter,
+        sentToFormatter, setupCopyEmailButton, subjectFormatter, removeLinkFormatter,
         unknownIfNullFormatter, unknownP,
         anyOf = [].indexOf || function(item) {
             var i, l;
@@ -157,6 +157,16 @@
             );
     };
 
+    removeLinkFormatter = function(row, cell, value) {
+        if (value === null) {
+            return gettext('An error occurred retrieving your email. Please try again later, and contact technical support if the problem persists.');  // eslint-disable-line max-len
+        }
+        return edx.HtmlUtils.joinHtml(edx.HtmlUtils.HTML(
+            '<p><a class="email_remove_link" href="javascript: void(0);" data-msg-id="'),
+            value.id, edx.HtmlUtils.HTML('">'), gettext('Cancel'), edx.HtmlUtils.HTML('</a></p>')
+            );
+    };
+
     pWrapper = function(value) {
         return edx.HtmlUtils.joinHtml(edx.HtmlUtils.HTML('<p>'), value, edx.HtmlUtils.HTML('</p>'));
     };
@@ -242,6 +252,67 @@
         return $tableEmails.append($('<br/>'));
     };
 
+    // copy of createEmailContentTable variable
+    createEmailDelayContentTable = function($tableEmails, $tableEmailsInner, emailData) {
+        var $tablePlaceholder, columns, options, tableData;
+        $tableEmailsInner.empty();
+        $tableEmails.show();
+        options = {
+            enableCellNavigation: true,
+            enableColumnReorder: false,
+            autoHeight: true,
+            rowHeight: 50,
+            forceFitColumns: true
+        };
+        columns = [
+            {
+                id: 'email',
+                field: 'email',
+                name: gettext('Subject'),
+                minWidth: 80,
+                cssClass: 'email-content-cell',
+                formatter: subjectFormatter
+            }, {
+                id: 'requester',
+                field: 'requester',
+                name: gettext('Sent By'),
+                minWidth: 80,
+                maxWidth: 100,
+                cssClass: 'email-content-cell',
+                formatter: unknownIfNullFormatter
+            }, {
+                id: 'sent_to',
+                field: 'sent_to',
+                name: gettext('Sent To'),
+                minWidth: 80,
+                maxWidth: 100,
+                cssClass: 'email-content-cell',
+                formatter: sentToFormatter
+            }, {
+                id: 'delay_time',
+                field: 'delay_time',
+                name: gettext('Scheduled time to send'),
+                minWidth: 80,
+                cssClass: 'email-content-cell',
+                formatter: unknownIfNullFormatter
+            }, {
+                id: 'remove_link',
+                field: 'email',
+                name: gettext('Actions'),
+                minWidth: 80,
+                cssClass: 'email-content-cell',
+                formatter: removeLinkFormatter
+            }
+        ];
+        tableData = emailData;
+        $tablePlaceholder = $('<div/>', {
+            class: 'slickgrid'
+        });
+        $tableEmailsInner.append($tablePlaceholder);
+        Slick.Grid($tablePlaceholder, tableData, columns, options);
+        return $tableEmails.append($('<br/>'));
+    };
+
     createEmailMessageViews = function($messagesWrapper, emails) {
         var $closeButton, $created, $emailContent, $emailContentHeader,
             $emailHeader, $emailWrapper, $message, $messageContent,
@@ -289,7 +360,9 @@
             $sentTo = interpolateHeader(gettext('Sent To:'), emailInfo.sent_to.join(', '));
             $emailHeader.append($subject);
             $emailHeader.append($requester);
-            $emailHeader.append($created);
+            if (!emailInfo.delay_time) {
+                $emailHeader.append($created);
+            }
             $emailHeader.append($sentTo);
             $emailWrapper.append($emailHeader);
             $emailWrapper.append($('<hr>'));
@@ -528,6 +601,7 @@
             IntervalManager: IntervalManager,
             createTaskListTable: createTaskListTable,
             createEmailContentTable: createEmailContentTable,
+            createEmailDelayContentTable: createEmailDelayContentTable,
             createEmailMessageViews: createEmailMessageViews,
             PendingInstructorTasks: PendingInstructorTasks,
             KeywordValidator: KeywordValidator,

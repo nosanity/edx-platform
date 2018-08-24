@@ -686,6 +686,12 @@ def _section_send_email(course, access):
         'email_content_history_url': reverse(
             'list_email_content', kwargs={'course_id': unicode(course_key)}
         ),
+        'email_scheduled_url': reverse(
+            'list_scheduled_emails', kwargs={'course_id': unicode(course_key)}
+        ),
+        'email_remove_scheduled_url': reverse(
+            'remove_scheduled_email', kwargs={'course_id': unicode(course_key)}
+        ),
     }
     return section_data
 

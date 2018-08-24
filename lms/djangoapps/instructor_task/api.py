@@ -265,7 +265,7 @@ def submit_delete_entrance_exam_state_for_student(request, usage_key, student): 
     return submit_task(request, task_type, task_class, usage_key.course_key, task_input, task_key)
 
 
-def submit_bulk_course_email(request, course_key, email_id):
+def submit_bulk_course_email(request, course_key, email_id, countdown=None):
     """
     Request to have bulk email sent as a background task.
 
@@ -294,7 +294,7 @@ def submit_bulk_course_email(request, course_key, email_id):
     task_key_stub = str(email_id)
     # create the key value by using MD5 hash:
     task_key = hashlib.md5(task_key_stub).hexdigest()
-    return submit_task(request, task_type, task_class, course_key, task_input, task_key)
+    return submit_task(request, task_type, task_class, course_key, task_input, task_key, countdown=countdown)
 
 
 def submit_calculate_problem_responses_csv(request, course_key, problem_location):  # pylint: disable=invalid-name

@@ -72,7 +72,7 @@ from openedx.core.djangolib.markup import HTML
                 <span class="tip">${_("(Maximum 128 characters)")}</span>
             </label>
         </li>
-        <li>
+        <li class="field">
             <label>
                 ${_("Message:")}
                 <div class="email-editor">
@@ -80,6 +80,22 @@ from openedx.core.djangolib.markup import HTML
                 </div>
                 <input type="hidden" name="message" value="">
             </label>
+        </li>
+        <li>
+            <label><input type="checkbox" name="send_in_future" value="1"> ${_("Send later")}</label>
+            <div class="datetime_when_to_send hidden">
+                <table>
+                    <tr>
+                        <td>${_("Date: ")}</td>
+                        <td>${_("Time: ")}</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="date_when_to_send"></td>
+                        <td><input type="text" name="time_when_to_send"></td>
+                    </tr>
+                </table>
+            </div>
+
         </li>
     </ul>
     <div class="submit-email-action">
@@ -107,10 +123,26 @@ from openedx.core.djangolib.markup import HTML
         <div class="no-pending-tasks-message"></div>
     </div>
 
-
     <hr>
 
     <div class="vert-left email-background" id="section-task-history">
+        <h3 class="hd hd-3">${_("Scheduled emails")}</h3>
+        <div>
+            <p>${_("To see the scheduled emails, click this button:")}</p>
+            <br/>
+            <input type="button" name="scheduled-emails-content" value="${_("Show Scheduled Send")}"
+                   data-endpoint="${ section_data['email_scheduled_url'] }"
+                   data-remove-endpoint="${ section_data['email_remove_scheduled_url'] }"
+                   >
+            <div class="scheduled-request-response-error msg msg-warning copy"></div>
+            <p>
+            <div class="content-scheduled-email-table">
+                <p><em>${_("To read a email message, click its subject.")}</em></p>
+                <br/>
+                <div class="content-scheduled-table-inner"></div>
+            </div>
+            <div class="email-messages-wrapper"></div>
+        </div>
         <h3 class="hd hd-3">${_("Email Task History")}</h3>
         <div>
             <p>${_("To see the content of previously sent emails, click this button:")}</p>
