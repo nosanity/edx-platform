@@ -33,6 +33,7 @@ from django.core.mail.message import forbid_multi_line_headers
 from django.core.urlresolvers import reverse
 from django.utils.translation import override as override_language
 from django.utils.translation import ugettext as _
+from django.utils.translation import activate as activate_language
 from markupsafe import escape
 
 import dogstats_wrapper as dog_stats_api
@@ -47,6 +48,7 @@ from lms.djangoapps.instructor_task.subtasks import (
 )
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.lib.courses import course_image_url
+from openedx.openedu.lms.email.util import openedu_email, openedu_format_address
 from util.date_utils import get_default_time_display
 
 log = logging.getLogger('edx.celery.task')
@@ -404,7 +406,9 @@ def _get_source_address(course_id, course_title, course_language, truncate=True)
             )
         )
 
-    from_addr = format_address(course_title_no_quotes)
+    if course_language:
+        activate_language(course_language)
+    from_addr = openedu_format_address(course_title_no_quotes)
 
     # If the encoded from_addr is longer than 320 characters, reformat,
     # but with the course name rather than course title.
@@ -493,6 +497,8 @@ def _send_course_email(entry_id, email_id, to_list, global_email_context, subtas
     from_addr = course_email.from_addr if course_email.from_addr else \
         _get_source_address(course_email.course_id, course_title, course_language)
 
+    if course_language:
+        activate_language(course_language)
     # use the CourseEmailTemplate that was associated with the CourseEmail
     course_email_template = course_email.get_template()
     try:
@@ -520,6 +526,15 @@ def _send_course_email(entry_id, email_id, to_list, global_email_context, subtas
             # Construct message content using templates and context:
             plaintext_msg = course_email_template.render_plaintext(course_email.text_message, email_context)
             html_msg = course_email_template.render_htmltext(course_email.html_message, email_context)
+            # Reconstruct message content for openedu template
+            html_msg, plaintext_msg, unsubscribe_headers = openedu_email(
+                html_msg,
+                plaintext_msg,
+                email,
+                course_email,
+                course_title,
+                global_email_context['course_url']
+            )
 
             # Create email:
             email_msg = EmailMultiAlternatives(
@@ -527,6 +542,7 @@ def _send_course_email(entry_id, email_id, to_list, global_email_context, subtas
                 plaintext_msg,
                 from_addr,
                 [email],
+                headers=unsubscribe_headers,
                 connection=connection
             )
             email_msg.attach_alternative(html_msg, 'text/html')
