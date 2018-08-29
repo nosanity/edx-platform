@@ -113,7 +113,7 @@ COURSE_MODE_DEFAULTS = {
     'min_price': 0,
     'name': _('Honor'),
     'sku': None,
-    'slug': 'audit',
+    'slug': 'honor',
     'suggested_prices': '',
 }
 
