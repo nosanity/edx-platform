@@ -48,13 +48,20 @@ FEATURES['PROCTORED_EXAMS_ATTEMPT_DELETE'] = True
 NPOED_MAKO_TEMPLATES = ["/edx/app/edxapp/venvs/edxapp/src/sso-edx-npoed/sso_edx_npoed/templates/lms", ]
 
 # video manager
-EVMS_URL = 'https://evms.test.npoed.ru'
-EVMS_API_KEY = 'xxxxxxxxxxxxxxxxxx'
+EVMS_URL = ENV_TOKENS.get('EVMS_URL', None)
+EVMS_API_KEY = AUTH_TOKENS.get('EVMS_API_KEY', None)
+
+FEATURES['EVMS_TURN_ON'] = True
+if FEATURES['EVMS_TURN_ON']:
+    FEATURES['EVMS_QUALITY_CONTROL_ON'] = True
+    INSTALLED_APPS += (
+        # Api extension for openedu
+        'video_evms',
+    )
 
 INSTALLED_APPS += (
     # Api extension for openedu
     'open_edx_api_extension',
-    #'video_evms',
 )
 
 PROCTORING_BACKEND_PROVIDERS = {
