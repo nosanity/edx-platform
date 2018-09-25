@@ -14,6 +14,7 @@ import re
 import string
 import StringIO
 import time
+import datetime
 
 import unicodecsv
 from django.conf import settings
@@ -39,7 +40,7 @@ import instructor_analytics.csvs
 import instructor_analytics.distributions
 import lms.djangoapps.instructor.enrollment as enrollment
 import lms.djangoapps.instructor_task.api
-from bulk_email.models import BulkEmailFlag, CourseEmail
+from bulk_email.models import BulkEmailFlag, CourseEmail, CourseEmailDelay
 from certificates import api as certs_api
 from certificates.models import CertificateInvalidation, CertificateStatuses, CertificateWhitelist, GeneratedCertificate
 from courseware.access import has_access
@@ -2239,9 +2240,77 @@ def list_email_content(request, course_id):  # pylint: disable=unused-argument
     task_type = 'bulk_course_email'
     # First get tasks list of bulk emails sent
     emails = lms.djangoapps.instructor_task.api.get_instructor_task_history(course_id, task_type=task_type)
+    data = [item for item in map(extract_email_features, emails) if not item['delay_time']]
 
     response_payload = {
-        'emails': map(extract_email_features, emails),
+        'emails': data,
+    }
+    return JsonResponse(response_payload)
+
+
+@require_POST
+@ensure_csrf_cookie
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
+@require_level('staff')
+def list_scheduled_emails(request, course_id):
+    course_id = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+    task_type = 'bulk_course_email'
+    emails = lms.djangoapps.instructor_task.api.get_instructor_task_history(course_id, task_type=task_type)
+    data = [item for item in map(extract_email_features, emails) if item['delay_time']]
+
+    response_payload = {
+        'emails': data,
+    }
+    return JsonResponse(response_payload)
+
+
+@require_POST
+@ensure_csrf_cookie
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
+@require_level('staff')
+def remove_scheduled_email(request, course_id):
+    result = True
+    error = ''
+
+    course_id = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+    msg_id = request.POST.get('msg-id', None)
+    try:
+        msg_id = int(msg_id) if msg_id else None
+    except ValueError:
+        msg_id = None
+
+    if not msg_id:
+        result, error = False, _("Invalid email ID")
+    else:
+        try:
+            email = CourseEmail.objects.get(pk=msg_id)
+            if email.has_delay():
+                task_type = 'bulk_course_email'
+                tasks = lms.djangoapps.instructor_task.api.get_instructor_task_history(course_id, task_type=task_type)
+                task_found = False
+                for email_task in tasks:
+                    task_email_id = None
+                    try:
+                        task_input_information = json.loads(email_task.task_input)
+                        task_email_id = int(task_input_information['email_id'])
+                    except ValueError:
+                        pass
+                    if msg_id == task_email_id:
+                        task_found = True
+                        email_task.delete()
+                        break
+                if task_found:
+                    email.delete()
+                else:
+                    result, error = False, _("Task to send email doesn't exists")
+            else:
+                result, error = False, _("Email was already sent")
+        except CourseEmail.DoesNotExist:
+            result, error = False, _("Email was not found")
+
+    response_payload = {
+        'success': result,
+        'error': error
     }
     return JsonResponse(response_payload)
 
@@ -2539,6 +2608,14 @@ def send_email(request, course_id):
     targets = json.loads(request.POST.get("send_to"))
     subject = request.POST.get("subject")
     message = request.POST.get("message")
+    countdown = request.POST.get("send_in_future", None)
+
+    try:
+        countdown = int(countdown)
+        if countdown <= 0:
+            countdown = None
+    except ValueError:
+        countdown = None
 
     # allow two branding points to come from Site Configuration: which CourseEmailTemplate should be used
     # and what the 'from' field in the email should be
@@ -2574,13 +2651,18 @@ def send_email(request, course_id):
             template_name=template_name,
             from_addr=from_addr
         )
+        if countdown:
+            dt_in_future = email.created + datetime.timedelta(seconds=countdown)
+            email_delay = CourseEmailDelay(course_email=email, when=dt_in_future)
+            email_delay.save()
+
     except ValueError as err:
         log.exception(u'Cannot create course email for course %s requested by user %s for targets %s',
                       course_id, request.user, targets)
         return HttpResponseBadRequest(repr(err))
 
     # Submit the task, so that the correct InstructorTask object gets created (for monitoring purposes)
-    lms.djangoapps.instructor_task.api.submit_bulk_course_email(request, course_id, email.id)
+    lms.djangoapps.instructor_task.api.submit_bulk_course_email(request, course_id, email.id, countdown=countdown)
 
     response_payload = {
         'course_id': course_id.to_deprecated_string(),

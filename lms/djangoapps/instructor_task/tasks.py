@@ -49,6 +49,7 @@ from lms.djangoapps.instructor_task.tasks_helper.module_state import (
     reset_attempts_module_state
 )
 from lms.djangoapps.instructor_task.tasks_helper.runner import run_main_task
+from lms.djangoapps.instructor_task.models import InstructorTask
 
 TASK_LOG = logging.getLogger('edx.celery.task')
 
@@ -142,6 +143,11 @@ def send_bulk_course_email(entry_id, _xmodule_instance_args):
     # Translators: This is a past-tense verb that is inserted into task progress messages as {action}.
     action_name = ugettext_noop('emailed')
     visit_fcn = perform_delegate_email_batches
+    try:
+        InstructorTask.objects.get(pk=entry_id)
+    except InstructorTask.DoesNotExist:
+        return {}
+
     return run_main_task(entry_id, visit_fcn, action_name)
 
 

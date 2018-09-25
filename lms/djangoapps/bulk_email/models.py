@@ -299,6 +299,15 @@ class CourseEmail(Email):
         """
         return CourseEmailTemplate.get_template(name=self.template_name)
 
+    def get_delay(self):
+        try:
+            return self.delay
+        except CourseEmailDelay.DoesNotExist:
+            return None
+
+    def has_delay(self):
+        return True if self.get_delay() else False
+
 
 class Optout(models.Model):
     """
@@ -479,3 +488,12 @@ class BulkEmailFlag(ConfigurationModel):
             current_model.is_enabled(),
             current_model.require_course_email_auth
         )
+
+
+class CourseEmailDelay(models.Model):
+    class Meta(object):
+        app_label = "bulk_email"
+
+    course_email = models.OneToOneField(CourseEmail, primary_key=True,
+                                        related_name="delay")
+    when = models.DateTimeField()
