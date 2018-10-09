@@ -64,6 +64,10 @@ INSTALLED_APPS += (
     'open_edx_api_extension',
 )
 
+MAKO_TEMPLATES['main'] += [
+    OPENEDX_ROOT / 'eduscaled' / 'lms' / 'grading_policy' / 'templates',
+]
+
 PROCTORING_BACKEND_PROVIDERS = {
     "dummy": {
         "class": "edx_proctoring.backends.null.NullBackendProvider",

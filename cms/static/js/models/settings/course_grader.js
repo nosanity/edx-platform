@@ -5,6 +5,7 @@ define(['backbone', 'underscore', 'gettext'], function(Backbone, _, gettext) {
             'min_count': 1,
             'drop_count': 0,
             'short_label': '', // what to use in place of type if space is an issue
+            'passing_grade': 0, // int 0..100
             'weight': 0 // int 0..100
         },
         parse: function(attrs) {
@@ -17,6 +18,9 @@ define(['backbone', 'underscore', 'gettext'], function(Backbone, _, gettext) {
             }
             if (attrs['drop_count']) {
                 attrs.drop_count = Math.round(attrs.drop_count);
+            }
+            if (attrs['passing_grade']) {
+                attrs.passing_grade = Math.round(attrs.passing_grade);
             }
             return attrs;
         },
@@ -69,6 +73,14 @@ define(['backbone', 'underscore', 'gettext'], function(Backbone, _, gettext) {
                 gettext('Cannot drop more <%= types %> assignments than are assigned.')
             );
                 errors.drop_count = template({types: attrs.type});
+            }
+            if (_.has(attrs, 'passing_grade')) {
+                var passingGrade = attrs.passing_grade,
+                    intPsGrade = Math.round(passingGrade); // see if this ensures value saved is int
+                if (!isFinite(intPsGrade) || /\D+/.test(passingGrade) || (_.isString(passingGrade) && _.isEmpty(passingGrade.trim())) || intPsGrade < 0 || intPsGrade > 100) {
+                    errors.passing_grade = gettext("Please enter an integer between 0 and 100.");
+                }
+                else attrs.passing_grade = intPsGrade;
             }
             if (!_.isEmpty(errors)) return errors;
         }

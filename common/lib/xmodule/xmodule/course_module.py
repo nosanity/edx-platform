@@ -226,12 +226,14 @@ class CourseFields(object):
                     "drop_count": 2,
                     "short_label": "HW",
                     "weight": 0.15,
+                    "passing_grade": 0,
                 },
                 {
                     "type": "Lab",
                     "min_count": 12,
                     "drop_count": 2,
                     "weight": 0.15,
+                    "passing_grade": 0,
                 },
                 {
                     "type": "Midterm Exam",
@@ -239,6 +241,7 @@ class CourseFields(object):
                     "min_count": 1,
                     "drop_count": 0,
                     "weight": 0.3,
+                    "passing_grade": 0,
                 },
                 {
                     "type": "Final Exam",
@@ -246,6 +249,7 @@ class CourseFields(object):
                     "min_count": 1,
                     "drop_count": 0,
                     "weight": 0.4,
+                    "passing_grade": 0,
                 }
             ],
             "GRADE_CUTOFFS": {

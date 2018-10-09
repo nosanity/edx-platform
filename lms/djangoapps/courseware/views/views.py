@@ -1330,7 +1330,7 @@ def is_course_passed(course, grade_summary=None, student=None, request=None):
     if grade_summary is None:
         grade_summary = CourseGradeFactory().create(student, course).summary
 
-    return success_cutoff and grade_summary['percent'] >= success_cutoff
+    return success_cutoff and grade_summary['percent'] >= success_cutoff and grade_summary['sections_passed']
 
 
 # Grades can potentially be written - if so, let grading manage the transaction.

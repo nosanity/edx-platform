@@ -170,6 +170,7 @@ def grader_from_conf(conf):
     for subgraderconf in conf:
         subgraderconf = subgraderconf.copy()
         weight = subgraderconf.pop("weight", 0)
+        passing_grade = subgraderconf.pop("passing_grade", 0)
         try:
             if 'min_count' in subgraderconf:
                 #This is an AssignmentFormatGrader
@@ -184,7 +185,7 @@ def grader_from_conf(conf):
                     del subgraderconf[key]
 
             subgrader = subgrader_class(**subgraderconf)
-            subgraders.append((subgrader, subgrader.category, weight))
+            subgraders.append((subgrader, subgrader.category, weight, passing_grade))
 
         except (TypeError, ValueError) as error:
             # Add info and re-raise
@@ -269,7 +270,7 @@ class WeightedSubsectionsGrader(CourseGrader):
         section_breakdown = []
         grade_breakdown = OrderedDict()
 
-        for subgrader, assignment_type, weight in self.subgraders:
+        for subgrader, assignment_type, weight, passing_grade in self.subgraders:
             subgrade_result = subgrader.grade(grade_sheet, generate_random_scores)
 
             weighted_percent = subgrade_result['percent'] * weight
@@ -281,11 +282,13 @@ class WeightedSubsectionsGrader(CourseGrader):
                 'percent': weighted_percent,
                 'detail': section_detail,
                 'category': assignment_type,
+                'is_passed': subgrade_result['percent'] >= passing_grade,
             }
 
         return {
             'percent': total_percent,
             'section_breakdown': section_breakdown,
+            'sections_passed': all(section['is_passed'] for section in grade_breakdown.values()),
             'grade_breakdown': grade_breakdown
         }
 
