@@ -55,12 +55,12 @@ FEATURES['EVMS_TURN_ON'] = True
 if FEATURES['EVMS_TURN_ON']:
     FEATURES['EVMS_QUALITY_CONTROL_ON'] = True
     INSTALLED_APPS += (
-        # Api extension for openedu
+        # Api extension for eduscaled
         'video_evms',
     )
 
 INSTALLED_APPS += (
-    # Api extension for openedu
+    # Api extension for eduscaled
     'open_edx_api_extension',
 )
 
@@ -149,6 +149,4 @@ COPYRIGHT_YEAR = "2018"
 PAID_COURSE_REGISTRATION_CURRENCY = ['rub', u"\u20BD"]
 FEATURES['ENABLE_SOFTWARE_SECURE_FAKE'] = True
 
-INSTALLED_APPS += ('npoed_grading_features',)
-FEATURES["ENABLE_GRADING_FEATURES"] = True
-VERTICAL_GRADING_DEFAULT = True
+LANGUAGE_CODE = 'ru'

@@ -74,14 +74,14 @@ FEATURES['EVMS_TURN_ON'] = False
 
 if FEATURES['EVMS_TURN_ON']:
     INSTALLED_APPS += (
-        # Api extension for openedu
+        # Api extension for eduscaled
         'video_evms',
     )
     FEATURES['EVMS_QUALITY_CONTROL_ON'] = True
     EVMS_URL = ENV_TOKENS.get('EVMS_URL', None)
     EVMS_API_KEY = AUTH_TOKENS.get('EVMS_API_KEY', None)
 
-LOCALE_PATHS = (REPO_ROOT + "/openedu/npoed_translations", ) + LOCALE_PATHS
+LOCALE_PATHS = (REPO_ROOT + "/eduscaled/npoed_translations", ) + LOCALE_PATHS
 
 ORA_PATH_VENV = 'venvs/edxapp/lib/python2.7/site-packages/openassessment'
 ORA_LOCALE_PATH = '{}/{}/locale'.format(PROJECT_ROOT.dirname().dirname(), ORA_PATH_VENV)

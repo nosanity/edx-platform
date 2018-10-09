@@ -48,7 +48,7 @@ FEATURES['EVMS_TURN_ON'] = True
 if FEATURES['EVMS_TURN_ON']:
     FEATURES['EVMS_QUALITY_CONTROL_ON'] = True
     INSTALLED_APPS += (
-        # Api extension for openedu
+        # Api extension for eduscaled
         'video_evms',
     )
 
@@ -131,7 +131,4 @@ PROCTORING_BACKEND_PROVIDERS = AUTH_TOKENS.get("PROCTORING_BACKEND_PROVIDERS", P
 
 COPYRIGHT_YEAR = "2018"
 
-INSTALLED_APPS += ('npoed_grading_features',)
-FEATURES["ENABLE_GRADING_FEATURES"] = True
-VERTICAL_GRADING_DEFAULT = True
-
+LANGUAGE_CODE = 'ru'

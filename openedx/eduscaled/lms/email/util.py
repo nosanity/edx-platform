@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 User = get_user_model()
 
 
-def openedu_email(html_msg, plaintext_msg, email, course_email, course_title, course_url):
+def eduscaled_email(html_msg, plaintext_msg, email, course_email, course_title, course_url):
     to_course_html_msg = _('''<br/><p>You received this email because you are enrolled in the course "{course_title}"
     on the platform "{platform_name}". If you want to continue learning
     follow <a href="{course_url}courseware">this link.</a></p>''').format(
@@ -50,7 +50,7 @@ def openedu_email(html_msg, plaintext_msg, email, course_email, course_title, co
     return html_msg, plaintext_msg, unsubscribe_headers
 
 
-def openedu_format_address(course_title_no_quotes):
+def eduscaled_format_address(course_title_no_quotes):
     from_addr = _('"Course {course_title}" <{from_email}>').format(
             course_title=course_title_no_quotes,
             from_email=settings.BULK_EMAIL_DEFAULT_FROM_EMAIL

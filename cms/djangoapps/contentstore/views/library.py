@@ -34,7 +34,7 @@ from util.json_request import JsonResponse, JsonResponseBadRequest, expect_json
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import DuplicateCourseError
-from openedx.openedu.cms.utils import can_create_library
+from openedx.eduscaled.cms.utils import can_create_library
 
 from .component import CONTAINER_TEMPLATES, get_component_templates
 from .user import user_with_role

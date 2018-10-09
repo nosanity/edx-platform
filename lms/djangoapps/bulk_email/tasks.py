@@ -48,7 +48,7 @@ from lms.djangoapps.instructor_task.subtasks import (
 )
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.lib.courses import course_image_url
-from openedx.openedu.lms.email.util import openedu_email, openedu_format_address
+from openedx.eduscaled.lms.email.util import eduscaled_email, eduscaled_format_address
 from util.date_utils import get_default_time_display
 
 log = logging.getLogger('edx.celery.task')
@@ -411,7 +411,7 @@ def _get_source_address(course_id, course_title, course_language, truncate=True)
 
     if course_language:
         activate_language(course_language)
-    from_addr = openedu_format_address(course_title_no_quotes)
+    from_addr = eduscaled_format_address(course_title_no_quotes)
 
     # If the encoded from_addr is longer than 320 characters, reformat,
     # but with the course name rather than course title.
@@ -529,8 +529,8 @@ def _send_course_email(entry_id, email_id, to_list, global_email_context, subtas
             # Construct message content using templates and context:
             plaintext_msg = course_email_template.render_plaintext(course_email.text_message, email_context)
             html_msg = course_email_template.render_htmltext(course_email.html_message, email_context)
-            # Reconstruct message content for openedu template
-            html_msg, plaintext_msg, unsubscribe_headers = openedu_email(
+            # Reconstruct message content for eduscaled template
+            html_msg, plaintext_msg, unsubscribe_headers = eduscaled_email(
                 html_msg,
                 plaintext_msg,
                 email,

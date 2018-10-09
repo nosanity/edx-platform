@@ -77,7 +77,7 @@ if AUTH_TOKENS.get('AWS_S3_CALLING_FORMAT'):
     AWS_S3_CALLING_FORMAT = AUTH_TOKENS.get('AWS_S3_CALLING_FORMAT')
 
 INSTALLED_APPS += (
-    # Api extension for openedu
+    # Api extension for eduscaled
     'open_edx_api_extension',
     'video_evms',
 )
