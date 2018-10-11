@@ -15,7 +15,7 @@ from openedx.core.djangolib.markup import HTML, Text
 from openedx.features.course_experience import SHOW_REVIEWS_TOOL_FLAG
 %>
 
-<%block name="pagetitle">${_("{course_number} Course Info").format(course_number=course.display_number_with_default)}</%block>
+<%block name="pagetitle">${_("{course_name} Course Info").format(course_name=course.display_name_with_default)}</%block>
 
 <%block name="headextra">
 <%static:css group='style-course-vendor'/>
