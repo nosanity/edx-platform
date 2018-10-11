@@ -103,3 +103,9 @@ COPYRIGHT_YEAR = "2018"
 INSTALLED_APPS += ('npoed_grading_features',)
 FEATURES["ENABLE_GRADING_FEATURES"] = True
 VERTICAL_GRADING_DEFAULT = True
+
+FEATURES['ENABLE_CMS_API'] = True
+if FEATURES['ENABLE_CMS_API']:
+    INSTALLED_APPS += (
+        'open_edx_api_extension_cms',
+    )
