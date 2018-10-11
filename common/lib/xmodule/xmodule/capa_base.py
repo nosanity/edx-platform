@@ -219,6 +219,11 @@ class CapaFields(object):
                "or to report an issue, please contact moocsupport@mathworks.com"),
         scope=Scope.settings
     )
+    show_is_answer_correct = Boolean(
+        display_name=_("Show the correctness of the student answer"),
+        default=True,
+        scope=Scope.settings
+    )
 
 
 class CapaMixin(ScorableXBlockMixin, CapaFields):
@@ -258,8 +263,8 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
                 self.seed = self.lcp.seed
 
         except Exception as err:  # pylint: disable=broad-except
-            msg = u'cannot create LoncapaProblem {loc}: {err}'.format(
-                loc=self.location.to_deprecated_string(), err=err)
+            msg = u'cannot create LoncapaProblem {loc}'.format(
+                loc=self.location.to_deprecated_string())
             # TODO (vshnayder): do modules need error handlers too?
             # We shouldn't be switching on DEBUG.
             if self.runtime.DEBUG:
@@ -922,6 +927,8 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
 
         Limits access to the correct/incorrect flags, messages, and problem score.
         """
+        if not self.show_is_answer_correct:
+            return False
         return ShowCorrectness.correctness_available(
             show_correctness=self.show_correctness,
             due_date=self.close_date,
@@ -1503,7 +1510,7 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
         msg = _("Your answers have been saved.")
         if not self.max_attempts == 0:
             msg = _(
-                "Your answers have been saved but not graded. Click '{button_name}' to grade them."
+                u"Your answers have been saved but not graded. Click '{button_name}' to grade them."
             ).format(button_name=self.submit_button_name())
         return {
             'success': True,
