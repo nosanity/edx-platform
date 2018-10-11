@@ -5,13 +5,14 @@ from contextlib import contextmanager
 from logging import getLogger
 
 from crum import get_current_user
+from django.conf import settings
 from django.dispatch import receiver
 from xblock.scorable import ScorableXBlockMixin, Score
 
 from courseware.model_data import get_score, set_score
 from eventtracking import tracker
 from openedx.core.lib.grade_utils import is_score_higher_or_equal
-from student.models import user_by_anonymous_id
+from student.models import user_by_anonymous_id, ENROLL_STATUS_CHANGE
 from submissions.models import score_reset, score_set
 from track.event_transaction_utils import (
     create_new_event_transaction_id,
@@ -24,13 +25,16 @@ from util.date_utils import to_timestamp
 from ..constants import ScoreDatabaseTableEnum
 from ..new.course_grade_factory import CourseGradeFactory
 from ..scores import weighted_score
-from ..tasks import RECALCULATE_GRADE_DELAY, recalculate_subsection_grade_v3
+from ..tasks import RECALCULATE_GRADE_DELAY, recalculate_subsection_grade_v3, recalculate_vertical_grade_v3
 from .signals import (
     PROBLEM_RAW_SCORE_CHANGED,
     PROBLEM_WEIGHTED_SCORE_CHANGED,
+    VERTICAL_SCORE_CHANGED,
+    PROGRESS_PAGE_VISITED,
     SCORE_PUBLISHED,
     SUBSECTION_SCORE_CHANGED
 )
+from .stsos import stsos_data, stsos_enroll_data, stsos_progress_data
 
 log = getLogger(__name__)
 
@@ -214,7 +218,11 @@ def enqueue_subsection_update(sender, **kwargs):  # pylint: disable=unused-argum
     enqueueing a subsection update operation to occur asynchronously.
     """
     _emit_event(kwargs)
-    result = recalculate_subsection_grade_v3.apply_async(
+    if settings.GRADING_TYPE == 'vertical':
+        recalculate_method = recalculate_vertical_grade_v3
+    else:
+        recalculate_method = recalculate_subsection_grade_v3
+    result = recalculate_method.apply_async(
         kwargs=dict(
             user_id=kwargs['user_id'],
             anonymous_user_id=kwargs.get('anonymous_user_id'),
@@ -235,6 +243,14 @@ def enqueue_subsection_update(sender, **kwargs):  # pylint: disable=unused-argum
             getattr(result, 'id', 'N/A'),
         )
     )
+
+
+@receiver(VERTICAL_SCORE_CHANGED)
+def recalculate_course_grade(sender, course, course_structure, user, **kwargs):  # pylint: disable=unused-argument
+    """
+    Updates a saved course grade.
+    """
+    CourseGradeFactory().update(user, course=course, course_structure=course_structure)
 
 
 @receiver(SUBSECTION_SCORE_CHANGED)
@@ -294,3 +310,18 @@ def _emit_event(kwargs):
                 'event_transaction_type': unicode(GRADES_RESCORE_EVENT_TYPE),
             }
         )
+
+
+@receiver(PROBLEM_WEIGHTED_SCORE_CHANGED)
+def stsos_handler(sender, **kwargs):
+    stsos_data(kwargs)
+
+
+@receiver(ENROLL_STATUS_CHANGE)
+def stsos_enroll_handler(sender, **kwargs):
+    stsos_enroll_data(kwargs)
+
+
+@receiver(PROGRESS_PAGE_VISITED)
+def stsos_progress_handler(sender, **kwargs):
+    stsos_progress_data(kwargs)

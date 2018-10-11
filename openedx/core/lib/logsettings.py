@@ -4,6 +4,7 @@ import os
 import platform
 import sys
 from logging.handlers import SysLogHandler
+from django.conf import settings
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
@@ -59,6 +60,11 @@ def get_logger_config(log_dir,
     if syslog_addr:
         handlers.append('syslogger-remote')
 
+    if hasattr(settings, 'RAVEN_CONFIG') and hasattr(settings.RAVEN_CONFIG, 'dsn'):
+        handlers.append('sentry')
+
+    handlers.append('stsos')
+
     logger_config = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -91,6 +97,11 @@ def get_logger_config(log_dir,
         'loggers': {
             'tracking': {
                 'handlers': ['tracking'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'stsos': {
+                'handlers': ['stsos'],
                 'level': 'DEBUG',
                 'propagate': False,
             },
@@ -156,6 +167,58 @@ def get_logger_config(log_dir,
                 'facility': SysLogHandler.LOG_LOCAL1,
                 'formatter': 'raw',
             },
+            'stsos': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.SysLogHandler',
+                'address': '/dev/log',
+                'facility': SysLogHandler.LOG_LOCAL2,
+                'formatter': 'raw',
+            },
         })
+
+    if hasattr(settings, 'RAVEN_CONFIG') and hasattr(settings.RAVEN_CONFIG, 'dsn'):
+        logger_config['handlers'].update({
+            'sentry': {
+                'level': 'ERROR',
+                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            },
+        })
+        logger_config['loggers'].update({
+            'raven': {
+                'level': 'DEBUG',
+                'handlers': ['console', 'sentry'],
+                'propagate': False,
+            },
+            'sentry.errors': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+                'propagate': False,
+            },
+        })
+
+    logger_config['filters'].update({
+        'stsos': {
+            '()': 'openedx.eduscaled.lms.stsos.logfilter.StsosFilter',
+        }
+    })
+
+    logger_config['handlers'].update({
+        'stsos': {
+            'level': 'INFO',
+            'class': 'logging.handlers.SysLogHandler',
+            'address': '/dev/log',
+            'facility': SysLogHandler.LOG_LOCAL2,
+            'formatter': 'raw',
+            'filters': ['stsos'],
+        },
+    })
+
+    logger_config['loggers'].update({
+        'stsos': {
+            'level': 'INFO',
+            'handlers': ['stsos'],
+            'propagate': False,
+        },
+    })
 
     return logger_config
