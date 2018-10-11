@@ -52,9 +52,17 @@ from openedx.core.djangolib.js_utils import js_escaped_string
         % if download_video_link:
         <div class="wrapper-download-video">
             <h4 class="hd hd-5">${_('Video')}</h4>
+            % if download_video_links_lst:
+                % for video_val in download_video_links_lst:
+                    <a class="btn-link video-sources video-download-button" href="${video_val['link']}">
+                        ${_('Download video file')} ${'(' + video_val['quality'] + ')' if video_val['quality'] else ''}
+                    </a><br />
+                % endfor
+            % else:
             <a class="btn-link video-sources video-download-button" href="${download_video_link}">
                 ${_('Download video file')}
             </a>
+            % endif
         </div>
         % endif
         % if track:

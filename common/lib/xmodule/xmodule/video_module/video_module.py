@@ -206,6 +206,8 @@ class VideoModule(VideoModuleEvmsMixin,
         sources = filter(None, self.html5_sources)
 
         download_video_link = None
+        download_video_links_lst = []
+        quality_dict = {"desktop_webm": "SD", "desktop_mp4": "HD"}
         branding_info = None
         youtube_streams = ""
 
@@ -231,6 +233,8 @@ class VideoModule(VideoModuleEvmsMixin,
                 # if it doesn't have an encoded video entry for that Video + Profile, the
                 # value will map to `None`
 
+                val_video_urls_helper_dict = {y: x for x, y in val_video_urls.items()}
+
                 # add the non-youtube urls to the list of alternative sources
                 # use the last non-None non-youtube non-hls url as the link to download the video
                 for url in [val_video_urls[p] for p in val_profiles if p != "youtube"]:
@@ -243,8 +247,14 @@ class VideoModule(VideoModuleEvmsMixin,
                             rewritten_link = rewrite_video_url(cdn_url, url)
                             if rewritten_link:
                                 download_video_link = rewritten_link
+
                             else:
                                 download_video_link = url
+                            quality = val_video_urls_helper_dict.get(download_video_link)
+                            download_video_links_lst.append({
+                                'quality': quality_dict.get(quality),
+                                'link': download_video_link
+                            })
 
                 # set the youtube url
                 if val_video_urls["youtube"]:
@@ -370,6 +380,7 @@ class VideoModule(VideoModuleEvmsMixin,
             'display_name': self.display_name_with_default,
             'handout': self.handout,
             'download_video_link': download_video_link,
+            'download_video_links_lst': download_video_links_lst,
             'track': track_url,
             'transcript_download_format': transcript_download_format,
             'transcript_download_formats_list': self.descriptor.fields['transcript_download_format'].values,
@@ -958,9 +969,10 @@ class VideoDescriptor(VideoDescriptorEvmsMixin, VideoFields, VideoTranscriptsMix
                 try:
                     val_video_data = edxval_api.get_video_info(self.edx_video_id)
                     # Unfortunately, the VAL API is inconsistent in how it returns the encodings, so remap here.
-                    for enc_vid in val_video_data.pop('encoded_videos'):
-                        if enc_vid['profile'] in video_profile_names:
-                            encoded_videos[enc_vid['profile']] = {key: enc_vid[key] for key in ["url", "file_size"]}
+                    if val_video_data:
+                        for enc_vid in val_video_data.pop('encoded_videos'):
+                            if enc_vid['profile'] in video_profile_names:
+                                encoded_videos[enc_vid['profile']] = {key: enc_vid[key] for key in ["url", "file_size"]}
                 except edxval_api.ValVideoNotFoundError:
                     pass
 
