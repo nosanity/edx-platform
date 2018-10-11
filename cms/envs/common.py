@@ -98,6 +98,8 @@ from lms.envs.common import (
 
     COURSE_ENROLLMENT_MODES,
 
+    GRADING_TYPE,
+
     HELP_TOKENS_BOOKS,
 
     SUPPORT_SITE_LINK,
@@ -1276,6 +1278,12 @@ MICROSITE_DATABASE_TEMPLATE_CACHE_TTL = 5 * 60
 PROCTORING_BACKEND_PROVIDER = {
     'class': 'edx_proctoring.backends.null.NullBackendProvider',
     'options': {},
+}
+PROCTORING_BACKEND_PROVIDERS = {
+    'default': {
+        'class': 'edx_proctoring.backends.null.NullBackendProvider',
+        'options': {},
+    }
 }
 PROCTORING_SETTINGS = {}
 

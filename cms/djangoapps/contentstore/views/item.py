@@ -1181,6 +1181,7 @@ def create_xblock_info(xblock, data=None, metadata=None, include_ancestor_info=F
             'format': xblock.format,
             'course_graders': [grader.get('type') for grader in graders],
             'has_changes': has_changes,
+            'weight': getattr(xblock, 'weight', None),
             'actions': xblock_actions,
             'explanatory_message': explanatory_message,
             'group_access': xblock.group_access,

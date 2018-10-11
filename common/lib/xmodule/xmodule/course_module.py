@@ -7,6 +7,7 @@ from cStringIO import StringIO
 from datetime import datetime, timedelta
 
 import requests
+from django.conf import settings
 from lazy import lazy
 from lxml import etree
 from openedx.core.lib.license import LicenseMixin
@@ -14,7 +15,8 @@ from path import Path as path
 from pytz import utc
 from xblock.fields import Scope, List, String, Dict, Boolean, Integer, Float
 
-from npoed_grading_features import enable_vertical_grading
+from stevedore.extension import ExtensionManager
+
 from xmodule import course_metadata_utils
 from xmodule.course_metadata_utils import DEFAULT_START_DATE
 from xmodule.graders import grader_from_conf
@@ -31,6 +33,10 @@ _ = lambda text: text
 CATALOG_VISIBILITY_CATALOG_AND_ABOUT = "both"
 CATALOG_VISIBILITY_ABOUT = "about"
 CATALOG_VISIBILITY_NONE = "none"
+
+class GradingTypeError(Exception):
+    """An error occurred when grading type is unrecognized."""
+    pass
 
 
 class StringOrDate(Date):
@@ -167,7 +173,6 @@ class TextbookList(List):
         return json_data
 
 
-@enable_vertical_grading
 class CourseFields(object):
     lti_passports = List(
         display_name=_("LTI Passports"),
@@ -1231,6 +1236,19 @@ class CourseDescriptor(CourseFields, SequenceDescriptor, LicenseMixin):
         The lower the number the "newer" the course.
         """
         return course_metadata_utils.sorting_score(self.start, self.advertised_start, self.announcement)
+
+    @lazy
+    def grading(self):
+        """
+        Returns current grading strategy for the course. It is a class that
+        contains methods used for the grading.
+        """
+        name = settings.GRADING_TYPE
+        extension = ExtensionManager(namespace='openedx.grading_policy')
+        try:
+            return extension[name].plugin
+        except KeyError:
+            raise GradingTypeError("Unrecognized grading type `{0}`".format(name))
 
     @staticmethod
     def make_id(org, course, url_name):

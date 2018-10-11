@@ -467,3 +467,24 @@ def xblock_local_resource_url(block, uri):
             'block_type': block.scope_ids.block_type,
             'uri': uri,
         })
+
+
+def add_grading_markup(course, block, view, frag, context):  # pylint: disable=unused-argument
+    """
+    Updates the supplied module with a new get_html function that wraps the
+    output of the old get_html function with additional grading information.
+    """
+    if course and isinstance(block, VerticalBlock) and (not context or not context.get('child_of_vertical', False)):
+        return wrap_fragment(
+            frag,
+            render_to_string(
+                "grading_info.html",
+                {
+                    'block_content': frag.content,
+                    'due': block.due,
+                    'format': block.format if block.format is not None else '',
+                    'due_date_display_format': course.due_date_display_format,
+                }
+            )
+        )
+    return frag

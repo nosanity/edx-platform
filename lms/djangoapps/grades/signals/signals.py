@@ -81,3 +81,26 @@ SUBSECTION_SCORE_CHANGED = Signal(
         'subsection_grade',  # SubsectionGrade object
     ]
 )
+
+
+# Signal that indicates that a user's score for a vertical has been updated.
+# This is a downstream signal of PROBLEM_WEIGHTED_SCORE_CHANGED sent for each
+# affected containing vertical.
+VERTICAL_SCORE_CHANGED = Signal(
+    providing_args=[
+        'course',  # Course object
+        'course_structure',  # BlockStructure object
+        'user',  # User object
+        'vertical_grade',  # VerticalGrade object
+    ]
+)
+
+
+# Signal that indicates that a user's progress was calulated while user visited progress page.
+PROGRESS_PAGE_VISITED = Signal(
+    providing_args=[
+        'course_id',  #  Unicode string representing the course
+        'user',   # User object
+        'progress', # User progress in course (from 0 to 100)
+    ]
+)

@@ -69,6 +69,7 @@ from lms.djangoapps.ccx.custom_exception import CCXLocatorValidationException
 from lms.djangoapps.ccx.utils import prep_course_for_grading
 from lms.djangoapps.courseware.exceptions import CourseAccessRedirect, Redirect
 from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
+from lms.djangoapps.grades.signals.signals import PROGRESS_PAGE_VISITED
 from lms.djangoapps.instructor.enrollment import uses_shib
 from lms.djangoapps.instructor.views.api import require_global_staff
 from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification
@@ -939,11 +940,20 @@ def _progress(request, course_key, student_id):
         'passed': is_course_passed(course, grade_summary),
         'credit_course_requirements': _credit_course_requirements(course_key, student),
         'certificate_data': _get_cert_data(student, course, course_key, is_active, enrollment_mode),
+        'progress_summary_template': getattr(course.grading, 'PROGRESS_SUMMARY_TEMPLATE', ''),
         # TODO: (Experimental Code). See https://openedx.atlassian.net/wiki/display/RET/2.+In-course+Verification+Prompts
         'upgrade_link': check_and_get_upgrade_link(request, student, course.id),
         'upgrade_price': get_cosmetic_verified_display_price(course),
         # ENDTODO
     }
+
+
+    PROGRESS_PAGE_VISITED.send(
+        sender=None,
+        course_id=str(course.id),
+        user=student,
+        progress=grade_summary,
+    )
 
     with outer_atomic():
         response = render_to_response('courseware/progress.html', context)

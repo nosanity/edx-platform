@@ -12,12 +12,29 @@ import sys
 from collections import OrderedDict
 from datetime import datetime
 
+from django.conf import settings
+from stevedore.extension import ExtensionManager
+
 from contracts import contract
 from pytz import UTC
 
 from npoed_grading_features import enable_vertical_grading
 
 log = logging.getLogger("edx.courseware")
+
+
+class UnrecognizedGraderError(Exception):
+    """An error occurred when grader is unavailable."""
+    pass
+
+
+def get_grader(grader_type):
+    """Returns grader by the `grader_type(str)`."""
+    extension = ExtensionManager(namespace='openedx.graders')
+    try:
+        return extension[grader_type].plugin
+    except KeyError:
+        raise UnrecognizedGraderError("Unrecognized grader `{0}`".format(grader_type))
 
 
 class ScoreBase(object):
@@ -174,7 +191,7 @@ def grader_from_conf(conf):
         try:
             if 'min_count' in subgraderconf:
                 #This is an AssignmentFormatGrader
-                subgrader_class = AssignmentFormatGrader
+                subgrader_class = get_grader(settings.ASSIGNMENT_GRADER)
             else:
                 raise ValueError("Configuration has no appropriate grader class.")
 
@@ -194,7 +211,7 @@ def grader_from_conf(conf):
                    "\n    Error was:\n    " + str(error))
             raise ValueError(msg), None, sys.exc_info()[2]
 
-    return WeightedSubsectionsGrader(subgraders)
+    return get_grader(settings.COURSE_GRADER)(subgraders)
 
 
 class CourseGrader(object):

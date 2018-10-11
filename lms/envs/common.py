@@ -3061,6 +3061,13 @@ PROCTORING_BACKEND_PROVIDER = {
     'class': 'edx_proctoring.backends.null.NullBackendProvider',
     'options': {},
 }
+
+PROCTORING_BACKEND_PROVIDERS = {
+    'default': {
+        'class': 'edx_proctoring.backends.null.NullBackendProvider',
+        'options': {},
+    }
+}
 PROCTORING_SETTINGS = {}
 
 #### Custom Courses for EDX (CCX) configuration
@@ -3216,3 +3223,11 @@ COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds
 
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = LOW_PRIORITY_QUEUE
+
+############################ Settings for Grading app #############################
+ # Possible values: vertical|sequential
+GRADING_TYPE = 'vertical'
+# Computes a final grade for the course.
+COURSE_GRADER = 'WeightedSubsectionsGrader'
+# Computes a grade for the category (Assignment Type).
+ASSIGNMENT_GRADER = 'WeightedAssignmentFormatGrader'

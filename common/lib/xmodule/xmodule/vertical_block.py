@@ -6,6 +6,7 @@ from copy import copy
 
 from lxml import etree
 from xblock.core import XBlock
+from xblock.fields import Scope, Float
 from xblock.fragment import Fragment
 
 from npoed_grading_features import enable_vertical_grading
@@ -17,6 +18,8 @@ from xmodule.x_module import STUDENT_VIEW, XModuleFields
 from xmodule.xml_module import XmlParserMixin
 
 log = logging.getLogger(__name__)
+# Make '_' a no-op so we can scrape strings
+_ = lambda text: text
 
 # HACK: This shouldn't be hard-coded to two types
 # OBSOLETE: This obsoletes 'type'
@@ -29,6 +32,12 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
     """
     Layout XBlock for rendering subblocks vertically.
     """
+    weight = Float(
+        display_name=_('Weight'),
+        help=_('Defines the proportion of contribution of the vertical to the category.'),
+        default=1.0,
+        scope=Scope.settings
+    )
 
     resources_dir = 'assets/vertical'
 
