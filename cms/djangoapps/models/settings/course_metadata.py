@@ -63,6 +63,7 @@ class CourseMetadata(object):
         'show_correctness',
         'chrome',
         'default_tab',
+        'exam_review_checkbox',
         'exam_proctoring_system',
     ]
 
