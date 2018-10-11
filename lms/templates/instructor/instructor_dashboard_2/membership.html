@@ -31,6 +31,7 @@ from django.utils.translation import ugettext as _
   </div>
 </script>
 
+% if user.is_staff:
 <fieldset class="batch-enrollment membership-section">
     <legend id="heading-batch-enrollment" class="hd hd-3">${_("Batch Enrollment")}</legend>
     <label>
@@ -150,6 +151,7 @@ from django.utils.translation import ugettext as _
 </fieldset>
 
 <hr class="divider" />
+%endif
 %endif
 
 <div class="member-lists-management membership-section" aria-live="polite">
