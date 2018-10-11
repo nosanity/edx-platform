@@ -67,6 +67,8 @@ FEATURES['PROCTORED_EXAMS_ATTEMPT_DELETE'] = FEATURES.get('PROCTORED_EXAMS_ATTEM
 
 FEATURES['ICALENDAR_DUE_API'] = FEATURES.get('ICALENDAR_DUE_API', False)
 
+FEATURES['ENABLE_GRADE_DOWNLOADS'] = True
+
 ORA_PATH_VENV = 'venvs/edxapp/lib/python2.7/site-packages/openassessment'
 ORA_LOCALE_PATH = '{}/{}/locale'.format(PROJECT_ROOT.dirname().dirname(), ORA_PATH_VENV)
 LOCALE_PATHS += (ORA_LOCALE_PATH,)
@@ -82,9 +84,7 @@ INSTALLED_APPS += (
     'video_evms',
 )
 
-INSTALLED_APPS += ('openedx.core.djangoapps.instructor_reset_track', )
-FEATURES['ENABLE_INSTRUCTOR_RESET_TRACK'] = False
-LOCALE_PATHS = (REPO_ROOT + '/npoed_translations', ) + LOCALE_PATHS
+LOCALE_PATHS = (OPENEDX_ROOT + '/eduscaled/translations', ) + LOCALE_PATHS
 
 ORA_PATH_VENV = 'venvs/edxapp/lib/python2.7/site-packages/openassessment'
 ORA_LOCALE_PATH = '{}/{}/locale'.format(PROJECT_ROOT.dirname().dirname(), ORA_PATH_VENV)
@@ -123,5 +123,8 @@ FEATURES['ENABLE_SOFTWARE_SECURE_FAKE'] = True
 
 INSTALLED_APPS += ('npoed_grading_features',)
 FEATURES["ENABLE_GRADING_FEATURES"] = True
+FEATURES["ALLOW_COURSE_STAFF_GRADE_DOWNLOADS"] = True
 VERTICAL_GRADING_DEFAULT = True
 
+FEATURES['USE_LANGUAGE_FROM_COURSE_SETTINGS'] = True
+FEATURES['ALLOW_HIDING_DISCUSSION_TAB'] = True
