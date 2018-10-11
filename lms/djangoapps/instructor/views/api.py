@@ -206,6 +206,8 @@ def require_level(level):
 
             if has_access(request.user, level, course):
                 return func(*args, **kwargs)
+            elif request.user.id in getattr(settings, 'USERS_WITH_SPECIAL_PERMS_IDS', []):
+                return func(*args, **kwargs)
             else:
                 return HttpResponseForbidden()
         return wrapped
@@ -673,6 +675,31 @@ def students_update_enrollment(request, course_id):
             elif action == 'unenroll':
                 before, after = unenroll_email(
                     course_id, email, email_students, email_params, language=language
+                )
+                before_enrollment = before.to_dict()['enrollment']
+                before_allowed = before.to_dict()['allowed']
+                enrollment_obj = CourseEnrollment.get_enrollment(user, course_id)
+
+                if before_enrollment:
+                    state_transition = ENROLLED_TO_UNENROLLED
+                else:
+                    if before_allowed:
+                        state_transition = ALLOWEDTOENROLL_TO_UNENROLLED
+                    else:
+                        state_transition = UNENROLLED_TO_UNENROLLED
+
+            elif action == 'ban':
+                try:
+                    from open_edx_api_extension.utils import plp_check_unenroll
+                    plp_check, plp_response = plp_check_unenroll(
+                        identifiers, user.username, str(course_id), request.user.username
+                    )
+                    if not plp_check:
+                        return plp_response
+                except ImportError:
+                    pass
+                before, after = unenroll_email(
+                    course_id, email, False, email_params, language=language
                 )
                 before_enrollment = before.to_dict()['enrollment']
                 before_allowed = before.to_dict()['allowed']
@@ -1223,6 +1250,7 @@ def get_students_features(request, course_id, csv=False):  # pylint: disable=red
             'id', 'username', 'name', 'email', 'language', 'location',
             'year_of_birth', 'gender', 'level_of_education', 'mailing_address',
             'goals', 'enrollment_mode', 'verification_status',
+            'city', 'university', 'country',
         ]
 
     # Provide human-friendly and translatable names for these features. These names

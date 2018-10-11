@@ -124,6 +124,7 @@ def instructor_dashboard_2(request, course_id):
     sections = [
         _section_course_info(course, access),
         _section_membership(course, access, is_white_label),
+        _section_user_ban(course, access),
         _section_cohort_management(course, access),
         _section_discussions_management(course, access),
         _section_student_admin(course, access),
@@ -182,8 +183,16 @@ def instructor_dashboard_2(request, course_id):
         ((course.enable_proctored_exams and request.user.is_staff) or course.enable_timed_exams) and
         settings.FEATURES.get('ENABLE_SPECIAL_EXAMS', False)
     )
+
+    if request.user.id in settings.USERS_WITH_SPECIAL_PERMS_IDS:
+        access['admin'] = True
+        can_see_special_exams = True
+
     if can_see_special_exams:
         sections.append(_section_special_exams(course, access))
+
+    if request.user.id in settings.USERS_WITH_SPECIAL_PERMS_IDS:
+        access['admin'] = False
 
     # Certificates panel
     # This is used to generate example certificates
@@ -771,6 +780,17 @@ def _section_open_response_assessment(request, course, openassessment_blocks, ac
         'section_display_name': _('Open Responses'),
         'access': access,
         'course_id': unicode(course_key),
+    }
+    return section_data
+
+
+def _section_user_ban(course, access):
+    course_key = course.id
+    section_data = {
+        'section_key': 'ban_user',
+        'section_display_name': _('Ban User'),
+        'access': access,
+        'ban_button_url': reverse('students_update_enrollment', kwargs={'course_id': unicode(course_key)}),
     }
     return section_data
 
