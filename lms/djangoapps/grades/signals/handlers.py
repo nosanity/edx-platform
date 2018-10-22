@@ -8,6 +8,8 @@ from crum import get_current_user
 from django.conf import settings
 from django.dispatch import receiver
 from xblock.scorable import ScorableXBlockMixin, Score
+from xmodule.modulestore.django import modulestore
+from opaque_keys.edx.keys import CourseKey
 
 from courseware.model_data import get_score, set_score
 from eventtracking import tracker
@@ -218,10 +220,9 @@ def enqueue_subsection_update(sender, **kwargs):  # pylint: disable=unused-argum
     enqueueing a subsection update operation to occur asynchronously.
     """
     _emit_event(kwargs)
-    if settings.GRADING_TYPE == 'vertical':
-        recalculate_method = recalculate_vertical_grade_v3
-    else:
-        recalculate_method = recalculate_subsection_grade_v3
+    course_obj = modulestore().get_course(CourseKey.from_string(str(kwargs['course_id'])), depth=0)
+    recalculate_method = recalculate_vertical_grade_v3 if course_obj.enable_vertical_grading\
+        else recalculate_subsection_grade_v3
     result = recalculate_method.apply_async(
         kwargs=dict(
             user_id=kwargs['user_id'],

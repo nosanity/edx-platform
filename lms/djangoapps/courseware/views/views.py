@@ -947,7 +947,6 @@ def _progress(request, course_key, student_id):
         # ENDTODO
     }
 
-
     PROGRESS_PAGE_VISITED.send(
         sender=None,
         course_id=str(course.id),

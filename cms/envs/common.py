@@ -98,8 +98,6 @@ from lms.envs.common import (
 
     COURSE_ENROLLMENT_MODES,
 
-    GRADING_TYPE,
-
     HELP_TOKENS_BOOKS,
 
     SUPPORT_SITE_LINK,
@@ -109,6 +107,7 @@ from lms.envs.common import (
     CONTACT_EMAIL,
 
     DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH,
+    EDX_GRADING_TYPE,
 )
 from path import Path as path
 from warnings import simplefilter

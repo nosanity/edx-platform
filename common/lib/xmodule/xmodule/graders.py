@@ -28,13 +28,21 @@ class UnrecognizedGraderError(Exception):
     pass
 
 
-def get_grader(grader_type):
-    """Returns grader by the `grader_type(str)`."""
+def _get_grader(grader_type):
     extension = ExtensionManager(namespace='openedx.graders')
     try:
         return extension[grader_type].plugin
     except KeyError:
         raise UnrecognizedGraderError("Unrecognized grader `{0}`".format(grader_type))
+
+
+def get_assignment_format_grader(is_vertical_grading):
+    grader_type = 'WeightedAssignmentFormatGrader' if is_vertical_grading else 'AssignmentFormatGrader'
+    return _get_grader(grader_type)
+
+
+def get_course_grader():
+    return _get_grader('WeightedSubsectionsGrader')
 
 
 class ScoreBase(object):
@@ -172,7 +180,7 @@ def invalid_args(func, argdict):
     return set(argdict) - set(args)
 
 
-def grader_from_conf(conf):
+def grader_from_conf(conf, enable_vertical_grading=False):
     """
     This creates a CourseGrader from a configuration (such as in course_settings.py).
     The conf can simply be an instance of CourseGrader, in which case no work is done.
@@ -191,7 +199,7 @@ def grader_from_conf(conf):
         try:
             if 'min_count' in subgraderconf:
                 #This is an AssignmentFormatGrader
-                subgrader_class = get_grader(settings.ASSIGNMENT_GRADER)
+                subgrader_class = get_assignment_format_grader(enable_vertical_grading)
             else:
                 raise ValueError("Configuration has no appropriate grader class.")
 
@@ -211,7 +219,7 @@ def grader_from_conf(conf):
                    "\n    Error was:\n    " + str(error))
             raise ValueError(msg), None, sys.exc_info()[2]
 
-    return get_grader(settings.COURSE_GRADER)(subgraders)
+    return get_course_grader()(subgraders)
 
 
 class CourseGrader(object):
