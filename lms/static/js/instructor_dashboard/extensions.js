@@ -61,7 +61,7 @@
                         return ext.display_response('reset-extension', data);
                     },
                     error: function(xhr) {
-                        return ext.fail_with_error('reset-extension', gettext(Error reseting due date'), xhr);
+                        return ext.fail_with_error('reset-extension', gettext('Error reseting due date'), xhr);
                     }
                 });
             });
