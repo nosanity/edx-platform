@@ -37,7 +37,6 @@ for app in ENV_TOKENS.get('ADDL_INSTALLED_APPS', []):
 INSTALLED_APPS += (
     'open_edx_api_extension',
     'video_evms',
-    'openedx.core.djangoapps.npoed_session_monitor',
     'npoed_grading_features',
 )
 
