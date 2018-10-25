@@ -1,6 +1,8 @@
 from django.utils.translation import ugettext_lazy as _
 
 from aws import *
+from openedx.eduscaled.common.docker import is_docker
+from openedx.eduscaled.common.edxlogging import get_patched_logger_config
 
 # ==== Raven ====
 RAVEN_CONFIG = AUTH_TOKENS.get('RAVEN_CONFIG', {})
@@ -12,6 +14,15 @@ if RAVEN_CONFIG:
     except ImportError:
         print 'could not enable Raven!'
 # ===============
+
+if is_docker():
+    get_patched_logger_config(
+        LOGGING,
+        log_dir="/tmp",  # FIXME
+        service_variant=SERVICE_VARIANT,
+        use_raven=bool(RAVEN_CONFIG),
+        use_stsos=True
+    )
 
 SSO_NPOED_URL = ENV_TOKENS.get('SSO_NPOED_URL')
 if SSO_NPOED_URL:
