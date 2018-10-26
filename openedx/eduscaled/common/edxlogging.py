@@ -36,7 +36,7 @@ def get_patched_logger_config(logger_config, log_dir=None,
                       'format_notime')
 
     logger_config['filters']['filter_tracking'] = {
-        '()': 'openedx.openedu.common.edxlogging.FilterTracking',
+        '()': 'openedx.eduscaled.common.edxlogging.FilterTracking',
     }
 
     logger_config['formatters'].update({
