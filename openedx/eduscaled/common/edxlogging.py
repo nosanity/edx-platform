@@ -32,7 +32,7 @@ def get_patched_logger_config(logger_config, log_dir=None,
                      "|%(process)d|%(filename)s:%(lineno)d"
                      " %(message)s").format(service_variant=service_variant)
     format_withtime = "%(asctime)s {}".format(format_notime)
-    format_console = ('format_withtme' if sys.stdout.isatty() else
+    format_console = ('format_withtime' if sys.stdout.isatty() else
                       'format_notime')
 
     logger_config['filters']['filter_tracking'] = {
