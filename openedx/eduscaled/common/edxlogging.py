@@ -74,7 +74,7 @@ def get_patched_logger_config(logger_config, log_dir=None,
     if use_stsos:
         logger_config['filters'].update({
             'stsos': {
-                '()': 'openedx.core.lib.stsos_logging.StsosFilter',
+                '()': 'openedx.eduscaled.lms.stsos.logfilter.StsosFilter',
             }
         })
         logger_config['handlers'].update({
