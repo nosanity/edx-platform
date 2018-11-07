@@ -68,7 +68,8 @@ class GradesTransformer(BlockStructureTransformer):
         """
         block_structure.request_xblock_fields(*cls.FIELDS_TO_COLLECT)
         cls._collect_max_scores(block_structure)
-        if settings.GRADING_TYPE == 'vertical':
+        course_obj = block_structure.get_xblock(block_structure.root_block_usage_key)
+        if course_obj.enable_vertical_grading:
             merged_field_name = 'verticals'
             block_type = 'vertical'
         else:
