@@ -147,7 +147,7 @@ SERVER_EMAIL = os.getenv('SERVER_EMAIL', locals().get('SERVER_EMAIL'))
 SESSION_COOKIE_DOMAIN = os.getenv('SESSION_COOKIE_DOMAIN', locals().get('SESSION_COOKIE_DOMAIN'))
 SESSION_COOKIE_NAME = os.getenv('SESSION_COOKIE_NAME', SESSION_COOKIE_NAME if 'SESSION_COOKIE_NAME' in locals() else 'sessionid')
 
-SITE_NAME = os.getenv('SITE_NAME', SSO_NPOED_URL if 'SITE_NAME' in locals())
+SITE_NAME = os.getenv('SITE_NAME', locals().get('SITE_NAME'))
 
 SSO_NPOED_URL = os.getenv('SSO_NPOED_URL', locals().get('SSO_NPOED_URL'))
 STATIC_ROOT_BASE = os.getenv('STATIC_ROOT_BASE', STATIC_ROOT_BASE if 'STATIC_ROOT_BASE' in locals() else '/edx/var/edxapp/staticfiles')
