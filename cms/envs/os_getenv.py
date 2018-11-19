@@ -1,0 +1,337 @@
+from npoed import *
+
+import os
+
+
+### Env
+BUGS_EMAIL = os.getenv('BUGS_EMAIL', BUGS_EMAIL if 'BUGS_EMAIL' in locals())
+BULK_EMAIL_DEFAULT_FROM_EMAIL = os.getenv('BULK_EMAIL_DEFAULT_FROM_EMAIL', BULK_EMAIL_DEFAULT_FROM_EMAIL if 'BULK_EMAIL_DEFAULT_FROM_EMAIL' in locals())
+
+CACHES = {
+    "celery": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "KEY_FUNCTION": "util.memcache.safe_key",
+        "KEY_PREFIX": "celery",
+        "LOCATION": [
+            os.getenv('CACHES__celery__LOCATION', '127.0.0.1:11211')
+        ],
+        "TIMEOUT": 7200
+    },
+    "configuration": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "KEY_FUNCTION": "util.memcache.safe_key",
+        "KEY_PREFIX": "edx",
+        "LOCATION": [
+            os.getenv('CACHES__configuration__LOCATION', '127.0.0.1:11211')
+        ]
+    },
+    "course_structure_cache": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "KEY_FUNCTION": "util.memcache.safe_key",
+        "KEY_PREFIX": "course_structure",
+        "LOCATION": [
+            os.getenv('CACHES__course_structure_cache__LOCATION', '127.0.0.1:11211')
+        ],
+        "TIMEOUT": 7200
+    },
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "KEY_FUNCTION": "util.memcache.safe_key",
+        "KEY_PREFIX": "default",
+        "LOCATION": [
+            os.getenv('CACHES__default__LOCATION', '127.0.0.1:11211')
+        ],
+        "VERSION": "1"
+    },
+    "general": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "KEY_FUNCTION": "util.memcache.safe_key",
+        "KEY_PREFIX": "general",
+        "LOCATION": [
+            os.getenv('CACHES__general__LOCATION', '127.0.0.1:11211')
+        ]
+    },
+    "mongo_metadata_inheritance": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "KEY_FUNCTION": "util.memcache.safe_key",
+        "KEY_PREFIX": "mongo_metadata_inheritance",
+        "LOCATION": [
+            os.getenv('CACHES__mongo_metadata_inheritance__LOCATION', '127.0.0.1:11211')
+        ],
+        "TIMEOUT": 300
+    },
+    "ora2_cache": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "KEY_FUNCTION": "util.memcache.safe_key",
+        "KEY_PREFIX": "ora2",
+        "LOCATION": [
+            os.getenv('CACHES__ora2_cache__LOCATION', '127.0.0.1:11211')
+        ]
+    },
+    "staticfiles": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "KEY_FUNCTION": "util.memcache.safe_key",
+        "KEY_PREFIX": "edx_general",
+        "LOCATION": [
+            os.getenv('CACHES__staticfiles__LOCATION', '127.0.0.1:11211')
+        ]
+    }
+},
+
+CELERY_BROKER_HOSTNAME = os.getenv('CELERY_BROKER_HOSTNAME', CELERY_BROKER_HOSTNAME if 'CELERY_BROKER_HOSTNAME' in locals() else '127.0.0.1')
+CELERY_BROKER_TRANSPORT = os.getenv('CELERY_BROKER_TRANSPORT', CELERY_BROKER_TRANSPORT if 'CELERY_BROKER_TRANSPORT' in locals() else 'amqp')
+CELERY_BROKER_USE_SSL = os.getenv('CELERY_BROKER_USE_SSL', CELERY_BROKER_USE_SSL if 'CELERY_BROKER_USE_SSL' in locals() else False)
+CELERY_BROKER_VHOST = os.getenv('CELERY_BROKER_VHOST', CELERY_BROKER_VHOST if 'CELERY_BROKER_VHOST' in locals() else '')
+CMS_BASE = os.getenv('CMS_BASE', CMS_BASE if 'CMS_BASE' in locals() else 'studio')
+
+COMMENTS_SERVICE_KEY = os.getenv('COMMENTS_SERVICE_KEY', COMMENTS_SERVICE_KEY if 'COMMENTS_SERVICE_KEY' in locals() else '')
+COMMENTS_SERVICE_URL = os.getenv('COMMENTS_SERVICE_URL', COMMENTS_SERVICE_URL if 'COMMENTS_SERVICE_URL' in locals() else 'http://localhost:18080')
+COMPREHENSIVE_THEME_DIR = os.getenv('COMPREHENSIVE_THEME_DIR', COMPREHENSIVE_THEME_DIR if 'COMPREHENSIVE_THEME_DIR' in locals() else '/edx/app/edxapp/themes')
+
+CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', CONTACT_EMAIL if 'CONTACT_EMAIL' in locals())
+DEFAULT_FEEDBACK_EMAIL = os.getenv('DEFAULT_FEEDBACK_EMAIL', DEFAULT_FEEDBACK_EMAIL if 'DEFAULT_FEEDBACK_EMAIL' in locals())
+DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE', DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in locals() else 'django.core.files.storage.FileSystemStorage')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', DEFAULT_FROM_EMAIL if 'DEFAULT_FROM_EMAIL' in locals())
+DEFAULT_SITE_THEME = os.getenv('DEFAULT_SITE_THEME', DEFAULT_SITE_THEME if 'DEFAULT_SITE_THEME' in locals() else '')
+
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', EMAIL_BACKEND if 'EMAIL_BACKEND' in locals() else 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', EMAIL_HOST if 'EMAIL_HOST' in locals() else '127.0.0.1')
+EMAIL_PORT = os.getenv('EMAIL_PORT', EMAIL_PORT if 'EMAIL_PORT' in locals() else 25)
+ENABLE_COMPREHENSIVE_THEMING = os.getenv('ENABLE_COMPREHENSIVE_THEMING', ENABLE_COMPREHENSIVE_THEMING if 'ENABLE_COMPREHENSIVE_THEMING' in locals() else False)
+EVMS_URL = os.getenv('EVMS_URL', EVMS_URL if 'EVMS_URL' in locals() else 'http://localhost')
+
+FEATURES['ALLOW_ALL_ADVANCED_COMPONENTS'] = os.getenv('FEATURES__ALLOW_ALL_ADVANCED_COMPONENTS', True)
+FEATURES['ALLOW_COURSE_STAFF_GRADE_DOWNLOADS'] = os.getenv('FEATURES__ALLOW_COURSE_STAFF_GRADE_DOWNLOADS', False)
+FEATURES['ENABLE_DISCUSSION_HOME_PANEL'] = os.getenv('FEATURES__ENABLE_DISCUSSION_HOME_PANEL', True)
+FEATURES['ENABLE_DISCUSSION_SERVICE'] = os.getenv('FEATURES__ENABLE_DISCUSSION_SERVICE', True)
+FEATURES['ENABLE_GRADE_DOWNLOADS'] = os.getenv('FEATURES__ENABLE_GRADE_DOWNLOADS', True)
+FEATURES['ENABLE_OAUTH2_PROVIDER'] = os.getenv('FEATURES__ENABLE_OAUTH2_PROVIDER', True)
+FEATURES['ENABLE_PROCTORED_EXAMS'] = os.getenv('FEATURES__ENABLE_PROCTORED_EXAMS', True)
+FEATURES['ENABLE_SPECIAL_EXAMS'] = os.getenv('FEATURES__ENABLE_SPECIAL_EXAMS', True)
+FEATURES['ENABLE_SYSADMIN_DASHBOARD'] = os.getenv('FEATURES__ENABLE_SYSADMIN_DASHBOARD', False)
+FEATURES['ENABLE_THIRD_PARTY_AUTH'] = os.getenv('FEATURES__ENABLE_THIRD_PARTY_AUTH', True)
+FEATURES['EVMS_QUALITY_CONTROL_ON'] = os.getenv('FEATURES__AEVMS_QUALITY_CONTROL_ON', True)
+FEATURES['EVMS_TURN_ON'] = os.getenv('FEATURES__EVMS_TURN_ON', True)
+FEATURES['INDIVIDUAL_DUE_DATES'] = os.getenv('FEATURES__INDIVIDUAL_DUE_DATES', True)
+FEATURES['USE_CUSTOM_THEME'] = os.getenv('FEATURES__USE_CUSTOM_THEME', False)
+
+FILE_UPLOAD_STORAGE_BUCKET_NAME = os.getenv('FILE_UPLOAD_STORAGE_BUCKET_NAME', FILE_UPLOAD_STORAGE_BUCKET_NAME if 'FILE_UPLOAD_STORAGE_BUCKET_NAME' in locals() else '')
+FILE_UPLOAD_STORAGE_PREFIX = os.getenv('FILE_UPLOAD_STORAGE_PREFIX', FILE_UPLOAD_STORAGE_PREFIX if 'FILE_UPLOAD_STORAGE_PREFIX' in locals() else 'submissions_attachments')
+FOOTER_ORGANIZATION_IMAGE = os.getenv('FOOTER_ORGANIZATION_IMAGE', FOOTER_ORGANIZATION_IMAGE if 'FOOTER_ORGANIZATION_IMAGE' in locals() else 'images/logo.png')
+GITHUB_REPO_ROOT = os.getenv('GITHUB_REPO_ROOT', GITHUB_REPO_ROOT if 'GITHUB_REPO_ROOT' in locals() else '/edx/var/edxapp/data')
+
+LANGUAGE_CODE = os.getenv('LANGUAGE_CODE', LANGUAGE_CODE if 'LANGUAGE_CODE' in locals() else 'ru')
+LMS_BASE = os.getenv('LMS_BASE', LMS_BASE if 'LMS_BASE' in locals() else 'localhost')
+LMS_ROOT_URL = os.getenv('LMS_ROOT_URL', LMS_ROOT_URL if 'LMS_ROOT_URL' in locals() else 'http://localhost')
+LOCAL_LOGLEVEL = os.getenv('LOCAL_LOGLEVEL', LOCAL_LOGLEVEL if 'LOCAL_LOGLEVEL' in locals() else 'INFO')
+LOGGING_ENV = os.getenv('LOGGING_ENV', LOGGING_ENV if 'LOGGING_ENV' in locals() else 'sandbox')
+LOG_DIR = os.getenv('LOG_DIR', LOG_DIR if 'LOG_DIR' in locals() else '/edx/var/logs/edx')
+MEDIA_ROOT = os.getenv('MEDIA_ROOT', MEDIA_ROOT if 'MEDIA_ROOT' in locals() else '/edx/var/edxapp/media/')
+MEDIA_URL = os.getenv('MEDIA_URL', MEDIA_URL if 'MEDIA_URL' in locals() else '/media/')
+
+NPOED_MAKO_TEMPLATES = [
+    os.getenv('NPOED_MAKO_TEMPLATES', NPOED_MAKO_TEMPLATES[0] if 'NPOED_MAKO_TEMPLATES' in locals() else '')
+],
+
+OAUTH_OIDC_ISSUER = os.getenv('OAUTH_OIDC_ISSUER', OAUTH_OIDC_ISSUER if 'OAUTH_OIDC_ISSUER' in locals() else '/oauth2')
+
+ORA2_FILEUPLOAD_BACKEND = os.getenv('ORA2_FILEUPLOAD_BACKEND', ORA2_FILEUPLOAD_BACKEND if 'ORA2_FILEUPLOAD_BACKEND' in locals() else 'filesystem')
+ORA2_FILE_PREFIX = os.getenv('ORA2_FILE_PREFIX', ORA2_FILE_PREFIX if 'ORA2_FILE_PREFIX' in locals()else 'ora2')
+PAYMENT_SUPPORT_EMAIL = os.getenv('PAYMENT_SUPPORT_EMAIL', PAYMENT_SUPPORT_EMAIL if 'PAYMENT_SUPPORT_EMAIL' in locals())
+
+PLATFORM_NAME = os.getenv('PLATFORM_NAME', PLATFORM_NAME if 'PLATFORM_NAME' in locals())
+PLP_URL = os.getenv('PLP_URL', PLP_URL if 'PLP_URL' in locals())
+PRESS_EMAIL = os.getenv('PRESS_EMAIL', PRESS_EMAIL if 'PRESS_EMAIL' in locals())
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', SERVER_EMAIL if 'SERVER_EMAIL' in locals())
+
+SESSION_COOKIE_DOMAIN = os.getenv('SESSION_COOKIE_DOMAIN', SESSION_COOKIE_DOMAIN if 'SESSION_COOKIE_DOMAIN' in locals())
+SESSION_COOKIE_NAME = os.getenv('SESSION_COOKIE_NAME', SESSION_COOKIE_NAME if 'SESSION_COOKIE_NAME' in locals() else 'sessionid')
+
+SITE_NAME = os.getenv('SITE_NAME', SSO_NPOED_URL if 'SITE_NAME' in locals())
+
+SSO_NPOED_URL = os.getenv('SSO_NPOED_URL', SSO_NPOED_URL if 'SSO_NPOED_URL' in locals())
+STATIC_ROOT_BASE = os.getenv('STATIC_ROOT_BASE', STATIC_ROOT_BASE if 'STATIC_ROOT_BASE' in locals() else '/edx/var/edxapp/staticfiles')
+STATIC_URL_BASE = os.getenv('STATIC_URL_BASE', STATIC_URL_BASE if 'STATIC_URL_BASE' in locals() else '/static/')
+
+TECH_SUPPORT_EMAIL = os.getenv('TECH_SUPPORT_EMAIL', TECH_SUPPORT_EMAIL if 'TECH_SUPPORT_EMAIL' in locals())
+THEME_NAME = os.getenv('THEME_NAME', THEME_NAME if 'THEME_NAME' in locals())
+
+THIRD_PARTY_AUTH_BACKENDS_DEFAULT = THIRD_PARTY_AUTH_BACKENDS if THIRD_PARTY_AUTH_BACKENDS in locals()
+
+THIRD_PARTY_AUTH_BACKENDS_OS = []
+THIRD_PARTY_AUTH_BACKENDS_LMS = os.getenv('THIRD_PARTY_AUTH_BACKENDS_LMS', THIRD_PARTY_AUTH_BACKENDS_LMS if 'THIRD_PARTY_AUTH_BACKENDS_LMS' in locals())
+if THIRD_PARTY_AUTH_BACKENDS_LMS:
+    THIRD_PARTY_AUTH_BACKENDS_OS.append(THIRD_PARTY_AUTH_BACKENDS_LMS)
+THIRD_PARTY_AUTH_BACKENDS_CMS = os.getenv('THIRD_PARTY_AUTH_BACKENDS_CMS', THIRD_PARTY_AUTH_BACKENDS_CMS if 'THIRD_PARTY_AUTH_BACKENDS_CMS' in locals())
+if THIRD_PARTY_AUTH_BACKENDS_CMS:
+    THIRD_PARTY_AUTH_BACKENDS_OS.append(THIRD_PARTY_AUTH_BACKENDS_CMS)
+
+THIRD_PARTY_AUTH_BACKENDS = THIRD_PARTY_AUTH_BACKENDS_OS if THIRD_PARTY_AUTH_BACKENDS_OS else THIRD_PARTY_AUTH_BACKENDS_DEFAULT
+
+TIME_ZONE = os.getenv('TIME_ZONE', TIME_ZONE if 'TIME_ZONE' in locals())
+TIME_ZONE_DISPLAYED_FOR_DEADLINES = os.getenv('TIME_ZONE_DISPLAYED_FOR_DEADLINES', TIME_ZONE_DISPLAYED_FOR_DEADLINES if 'TIME_ZONE_DISPLAYED_FOR_DEADLINES' in locals())
+UNIVERSITY_EMAIL = os.getenv('UNIVERSITY_EMAIL', UNIVERSITY_EMAIL if 'UNIVERSITY_EMAIL' in locals())
+
+
+### Auth
+CONTENTSTORE = {
+    "ADDITIONAL_OPTIONS": {},
+    "DOC_STORE_CONFIG": {
+        "collection": "modulestore",
+        "connectTimeoutMS": 2000,
+        "db": "edxapp",
+        "host": [
+            os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__host', '127.0.0.1')
+        ],
+        "password": os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__password', ''),
+        "port": 27017,
+        "socketTimeoutMS": 3000,
+        "ssl": False,
+        "user": "edxapp"
+    },
+    "ENGINE": "xmodule.contentstore.mongo.MongoContentStore",
+    "OPTIONS": {
+        "db": "edxapp",
+        "host": [
+            os.getenv('CONTENTSTORE__OPTIONS__host', '127.0.0.1')
+        ],
+        "password": os.getenv('CONTENTSTORE__OPTIONS__password', ''),
+        "port": 27017,
+        "ssl": False,
+        "user": "edxapp"
+    }
+},
+
+DATABASES = {
+    "default": {
+        "ATOMIC_REQUESTS": True,
+        "CONN_MAX_AGE": 0,
+        "ENGINE": "django.db.backends.mysql",
+        "HOST": os.getenv('DATABASES__default__HOST', '127.0.0.1'),
+        "NAME": "edxapp",
+        "password": os.getenv('DATABASES__default__password', ''),
+        "PORT": "3306",
+        "USER": "edxapp001"
+    },
+    "read_replica": {
+        "CONN_MAX_AGE": 0,
+        "ENGINE": "django.db.backends.mysql",
+        "HOST": os.getenv('DATABASES__read_replica__HOST', '127.0.0.1'),
+        "NAME": "edxapp",
+        "password": os.getenv('DATABASES__read_replica__password', '127.0.0.1'),
+        "PORT": "3306",
+        "USER": "edxapp001"
+    },
+    "student_module_history": {
+        "CONN_MAX_AGE": 0,
+        "ENGINE": "django.db.backends.mysql",
+        "HOST": os.getenv('DATABASES__student_module_history__HOST', '127.0.0.1'),
+        "NAME": "edxapp_csmh",
+        "password": os.getenv('DATABASES__student_module_history__password', ''),
+        "PORT": "3306",
+        "USER": "edxapp001"
+    }
+}
+
+DOC_STORE_CONFIG = {
+    "collection": "modulestore",
+    "connectTimeoutMS": 2000,
+    "db": "edxapp",
+    "host": [
+        os.getenv('DOC_STORE_CONFIG__host', '127.0.0.1')
+    ],
+    "password": os.getenv('DOC_STORE_CONFIG__password', ''),
+    "port": 27017,
+    "socketTimeoutMS": 3000,
+    "ssl": False,
+    "user": "edxapp"
+},
+
+MODULESTORE = {
+    "default": {
+        "ENGINE": "xmodule.modulestore.mixed.MixedModuleStore",
+        "OPTIONS": {
+            "mappings": {},
+            "stores": [
+                {
+                    "DOC_STORE_CONFIG": {
+                        "collection": "modulestore",
+                        "connectTimeoutMS": 2000,
+                        "db": "edxapp",
+                        "host": [
+                            os.getenv('split__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__host', '127.0.0.1')
+                        ],
+                        "password": os.getenv('split__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__password', ''),
+                        "port": 27017,
+                        "socketTimeoutMS": 3000,
+                        "ssl": False,
+                        "user": "edxapp"
+                    },
+                    "ENGINE": "xmodule.modulestore.split_mongo.split_draft.DraftVersioningModuleStore",
+                    "NAME": "split",
+                    "OPTIONS": {
+                        "default_class": "xmodule.hidden_module.HiddenDescriptor",
+                        "fs_root": "/edx/var/edxapp/data",
+                        "render_template": "edxmako.shortcuts.render_to_string"
+                    }
+                },
+                {
+                    "DOC_STORE_CONFIG": {
+                        "collection": "modulestore",
+                        "connectTimeoutMS": 2000,
+                        "db": "edxapp",
+                        "host": [
+                            os.getenv('draft__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__host', '127.0.0.1')
+                        ],
+                        "password": os.getenv('draft__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__password', ''),
+                        "port": 27017,
+                        "socketTimeoutMS": 3000,
+                        "ssl": False,
+                        "user": "edxapp"
+                    },
+                    "ENGINE": "xmodule.modulestore.mongo.DraftMongoModuleStore",
+                    "NAME": "draft",
+                    "OPTIONS": {
+                        "default_class": "xmodule.hidden_module.HiddenDescriptor",
+                        "fs_root": "/edx/var/edxapp/data",
+                        "render_template": "edxmako.shortcuts.render_to_string"
+                    }
+                }
+            ]
+        }
+    }
+}
+
+RAVEN_CONFIG = {
+    "dsn": os.getenv('RAVEN_CONFIG__dsn', ''),
+    "release": "some_release",
+    "tags": {
+        "env": os.getenv('RAVEN_CONFIG__tags__env', '')
+    }
+},
+
+CELERY_BROKER_USER = os.getenv('CELERY_BROKER_USER', CELERY_BROKER_USER if 'CELERY_BROKER_USER' in locals() else 'celery')
+
+CELERY_BROKER_PASSWORD = os.getenv('CELERY_BROKER_PASSWORD', CELERY_BROKER_PASSWORD if 'CELERY_BROKER_PASSWORD' in locals() else '')
+
+DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE', DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in locals() else 'django.core.files.storage.FileSystemStorage')
+
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', EMAIL_HOST_PASSWORD if 'EMAIL_HOST_PASSWORD' in locals())
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', EMAIL_HOST_USER if 'EMAIL_HOST_USER' in locals())
+
+EVMS_API_KEY = os.getenv('EVMS_API_KEY', EVMS_API_KEY if 'EVMS_API_KEY' in locals() else '')
+EDX_API_KEY = os.getenv('EDX_API_KEY', EDX_API_KEY if 'EDX_API_KEY' in locals() else '')
+PLP_API_KEY = os.getenv('PLP_API_KEY', PLP_API_KEY if 'PLP_API_KEY' in locals() else '')
+SSO_API_TOKEN = os.getenv('SSO_API_TOKEN', SSO_API_TOKEN if 'SSO_API_TOKEN' in locals() else '')
+
+XQUEUE_INTERFACE = {
+    "basic_auth": [
+        "edx",
+        "edx"
+    ],
+    "django_auth": {
+        "password": os.getenv('XQUEUE_INTERFACE__django_auth__password', ''),
+        "username": "lms"
+    },
+    "url": "http://localhost:18040"
+}
