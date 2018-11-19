@@ -342,6 +342,10 @@ if os.environ.get('USE_DATABASE_SETTINGS_ONLY_FROM_ENVIRON'):
 # The normal database user does not have enough permissions to run migrations.
 # Migrations are run with separate credentials, given as DB_MIGRATION_*
 # environment variables
+
+# EDX-156 jira.ciot temporary dirty hack for docker
+DATABASES = dict()
+
 for name, database in DATABASES.items():
     if name != 'read_replica':
         database.update({
