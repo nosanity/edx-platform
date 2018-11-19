@@ -335,6 +335,10 @@ USER_TASKS_ARTIFACT_STORAGE = COURSE_IMPORT_EXPORT_STORAGE
 
 DATABASES = AUTH_TOKENS['DATABASES']
 
+# Hack for using DATABASES only from environ
+if os.environ.get('USE_DATABASE_SETTINGS_ONLY_FROM_ENVIRON'):
+    DATABASES = dict()
+
 # The normal database user does not have enough permissions to run migrations.
 # Migrations are run with separate credentials, given as DB_MIGRATION_*
 # environment variables
