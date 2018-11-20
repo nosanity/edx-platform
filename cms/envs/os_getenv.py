@@ -209,7 +209,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "HOST": os.getenv('DATABASES__default__HOST', '127.0.0.1'),
         "NAME": "edxapp",
-        "password": os.getenv('DATABASES__default__password', ''),
+        "PASSWORD": os.getenv('DATABASES__default__password', ''),
         "PORT": "3306",
         "USER": "edxapp001"
     },
@@ -218,7 +218,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "HOST": os.getenv('DATABASES__read_replica__HOST', '127.0.0.1'),
         "NAME": "edxapp",
-        "password": os.getenv('DATABASES__read_replica__password', ''),
+        "PASSWORD": os.getenv('DATABASES__read_replica__password', ''),
         "PORT": "3306",
         "USER": "edxapp001"
     },
@@ -227,7 +227,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "HOST": os.getenv('DATABASES__student_module_history__HOST', '127.0.0.1'),
         "NAME": "edxapp_csmh",
-        "password": os.getenv('DATABASES__student_module_history__password', ''),
+        "PASSWORD": os.getenv('DATABASES__student_module_history__password', ''),
         "PORT": "3306",
         "USER": "edxapp001"
     }
