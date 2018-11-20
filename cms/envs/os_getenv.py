@@ -206,7 +206,7 @@ DATABASES = {
     "default": {
         "ATOMIC_REQUESTS": True,
         "CONN_MAX_AGE": 0,
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": os.getenv('DATABASES__default__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__default__HOST', '127.0.0.1'),
         "NAME": "edxapp",
         "PASSWORD": os.getenv('DATABASES__default__password', ''),
@@ -215,7 +215,7 @@ DATABASES = {
     },
     "read_replica": {
         "CONN_MAX_AGE": 0,
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": os.getenv('DATABASES__read_replica__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__read_replica__HOST', '127.0.0.1'),
         "NAME": "edxapp",
         "PASSWORD": os.getenv('DATABASES__read_replica__password', ''),
@@ -224,7 +224,7 @@ DATABASES = {
     },
     "student_module_history": {
         "CONN_MAX_AGE": 0,
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": os.getenv('DATABASES__student_module_history__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__student_module_history__HOST', '127.0.0.1'),
         "NAME": "edxapp_csmh",
         "PASSWORD": os.getenv('DATABASES__student_module_history__password', ''),
