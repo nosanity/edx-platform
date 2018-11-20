@@ -329,7 +329,7 @@ PROCTORING_BACKEND_PROVIDERS = {
             }
         }
     }
-},
+}
 
 RAVEN_CONFIG = {
     "dsn": os.getenv('RAVEN_CONFIG__dsn', ''),
