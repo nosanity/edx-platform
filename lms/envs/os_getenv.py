@@ -4,8 +4,8 @@ import os
 
 
 ## Env
-BUGS_EMAIL = os.getenv('BUGS_EMAIL', BUGS_EMAIL if 'BUGS_EMAIL' in locals())
-BULK_EMAIL_DEFAULT_FROM_EMAIL = os.getenv('BULK_EMAIL_DEFAULT_FROM_EMAIL', BULK_EMAIL_DEFAULT_FROM_EMAIL if 'BULK_EMAIL_DEFAULT_FROM_EMAIL' in locals())
+BUGS_EMAIL = os.getenv('BUGS_EMAIL', locals().get('BUGS_EMAIL'))
+BULK_EMAIL_DEFAULT_FROM_EMAIL = os.getenv('BULK_EMAIL_DEFAULT_FROM_EMAIL', locals().get('BULK_EMAIL_DEFAULT_FROM_EMAIL'))
 
 CACHES = {
     "celery": {
@@ -89,10 +89,10 @@ COMMENTS_SERVICE_KEY = os.getenv('COMMENTS_SERVICE_KEY', COMMENTS_SERVICE_KEY if
 COMMENTS_SERVICE_URL = os.getenv('COMMENTS_SERVICE_URL', COMMENTS_SERVICE_URL if 'COMMENTS_SERVICE_URL' in locals() else 'http://localhost:18080')
 COMPREHENSIVE_THEME_DIR = os.getenv('COMPREHENSIVE_THEME_DIR', COMPREHENSIVE_THEME_DIR if 'COMPREHENSIVE_THEME_DIR' in locals() else '/edx/app/edxapp/themes')
 
-CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', CONTACT_EMAIL if 'CONTACT_EMAIL' in locals())
-DEFAULT_FEEDBACK_EMAIL = os.getenv('DEFAULT_FEEDBACK_EMAIL', DEFAULT_FEEDBACK_EMAIL if 'DEFAULT_FEEDBACK_EMAIL' in locals())
+CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', locals().get('CONTACT_EMAIL'))
+DEFAULT_FEEDBACK_EMAIL = os.getenv('DEFAULT_FEEDBACK_EMAIL', locals().get('DEFAULT_FEEDBACK_EMAIL'))
 DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE', DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in locals() else 'django.core.files.storage.FileSystemStorage')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', DEFAULT_FROM_EMAIL if 'DEFAULT_FROM_EMAIL' in locals())
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', locals().get('DEFAULT_FROM_EMAIL'))
 DEFAULT_SITE_THEME = os.getenv('DEFAULT_SITE_THEME', DEFAULT_SITE_THEME if 'DEFAULT_SITE_THEME' in locals() else '')
 
 MAIL_BACKEND = os.getenv('EMAIL_BACKEND', EMAIL_BACKEND if 'EMAIL_BACKEND' in locals() else 'django.core.mail.backends.smtp.EmailBackend')
@@ -140,8 +140,8 @@ OAUTH_OIDC_ISSUER = os.getenv('OAUTH_OIDC_ISSUER', OAUTH_OIDC_ISSUER if 'OAUTH_O
 ORA2_FILEUPLOAD_BACKEND = os.getenv('ORA2_FILEUPLOAD_BACKEND', ORA2_FILEUPLOAD_BACKEND if 'ORA2_FILEUPLOAD_BACKEND' in locals() else 'filesystem')
 ORA2_FILE_PREFIX = os.getenv('ORA2_FILE_PREFIX', ORA2_FILE_PREFIX if 'ORA2_FILE_PREFIX' in locals()else 'ora2')
 
-PLATFORM_NAME = os.getenv('PLATFORM_NAME', PLATFORM_NAME if 'PLATFORM_NAME' in locals())
-PLP_URL = os.getenv('PLP_URL', PLP_URL if 'PLP_URL' in locals())
+PLATFORM_NAME = os.getenv('PLATFORM_NAME', locals().get('PLATFORM_NAME'))
+PLP_URL = os.getenv('PLP_URL', locals().get('PLP_URL'))
 PLP_BAN_ON = os.getenv('PLP_BAN_ON', PLP_BAN_ON if 'PLP_BAN_ON' in locals() else False)
 
 PROCTORING_SETTINGS = {
@@ -157,37 +157,37 @@ PROCTORING_SETTINGS = {
     "SOFTWARE_SECURE_CLIENT_TIMEOUT": 383
 }
 
-PRESS_EMAIL = os.getenv('PRESS_EMAIL', PRESS_EMAIL if 'PRESS_EMAIL' in locals())
-SERVER_EMAIL = os.getenv('SERVER_EMAIL', SERVER_EMAIL if 'SERVER_EMAIL' in locals())
+PRESS_EMAIL = os.getenv('PRESS_EMAIL', locals().get('PRESS_EMAIL'))
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', locals().get('SERVER_EMAIL'))
 
-SESSION_COOKIE_DOMAIN = os.getenv('SESSION_COOKIE_DOMAIN', SESSION_COOKIE_DOMAIN if 'SESSION_COOKIE_DOMAIN' in locals())
+SESSION_COOKIE_DOMAIN = os.getenv('SESSION_COOKIE_DOMAIN', locals().get('SESSION_COOKIE_DOMAIN'))
 SESSION_COOKIE_NAME = os.getenv('SESSION_COOKIE_NAME', SESSION_COOKIE_NAME if 'SESSION_COOKIE_NAME' in locals() else 'sessionid')
 
-SITE_NAME = os.getenv('SITE_NAME', SSO_NPOED_URL if 'SITE_NAME' in locals())
+SITE_NAME = os.getenv('SITE_NAME', locals().get('SITE_NAME'))
 
-SSO_NPOED_URL = os.getenv('SSO_NPOED_URL', SSO_NPOED_URL if 'SSO_NPOED_URL' in locals())
+SSO_NPOED_URL = os.getenv('SSO_NPOED_URL', locals().get('SSO_NPOED_URL'))
 STATIC_ROOT_BASE = os.getenv('STATIC_ROOT_BASE', STATIC_ROOT_BASE if 'STATIC_ROOT_BASE' in locals() else '/edx/var/edxapp/staticfiles')
-THEME_NAME = os.getenv('THEME_NAME', THEME_NAME if 'THEME_NAME' in locals() else '/static/')
+STATIC_URL_BASE = os.getenv('STATIC_ROOT_URL', STATIC_URL_BASE if 'STATIC_URL_BASE' in locals() else '/static/')
 
 
 TECH_SUPPORT_EMAIL = os.getenv('TECH_SUPPORT_EMAIL', TECH_SUPPORT_EMAIL if 'TECH_SUPPORT_EMAIL' in locals())
-THEME_NAME = os.getenv('THEME_NAME', THEME_NAME if 'THEME_NAME' in locals())
+THEME_NAME = os.getenv('THEME_NAME', locals().get('THEME_NAME'))
 
-THIRD_PARTY_AUTH_BACKENDS_DEFAULT = THIRD_PARTY_AUTH_BACKENDS if THIRD_PARTY_AUTH_BACKENDS in locals()
+THIRD_PARTY_AUTH_BACKENDS_DEFAULT = locals().get('THIRD_PARTY_AUTH_BACKENDS', [])
 
 THIRD_PARTY_AUTH_BACKENDS_OS = []
-THIRD_PARTY_AUTH_BACKENDS_LMS = os.getenv('THIRD_PARTY_AUTH_BACKENDS_LMS', THIRD_PARTY_AUTH_BACKENDS_LMS if 'THIRD_PARTY_AUTH_BACKENDS_LMS' in locals())
+THIRD_PARTY_AUTH_BACKENDS_LMS = os.getenv('THIRD_PARTY_AUTH_BACKENDS_LMS')
 if THIRD_PARTY_AUTH_BACKENDS_LMS:
     THIRD_PARTY_AUTH_BACKENDS_OS.append(THIRD_PARTY_AUTH_BACKENDS_LMS)
-THIRD_PARTY_AUTH_BACKENDS_CMS = os.getenv('THIRD_PARTY_AUTH_BACKENDS_CMS', THIRD_PARTY_AUTH_BACKENDS_CMS if 'THIRD_PARTY_AUTH_BACKENDS_CMS' in locals())
+THIRD_PARTY_AUTH_BACKENDS_CMS = os.getenv('THIRD_PARTY_AUTH_BACKENDS_CMS')
 if THIRD_PARTY_AUTH_BACKENDS_CMS:
     THIRD_PARTY_AUTH_BACKENDS_OS.append(THIRD_PARTY_AUTH_BACKENDS_CMS)
 
 THIRD_PARTY_AUTH_BACKENDS = THIRD_PARTY_AUTH_BACKENDS_OS if THIRD_PARTY_AUTH_BACKENDS_OS else THIRD_PARTY_AUTH_BACKENDS_DEFAULT
 
-TIME_ZONE = os.getenv('TIME_ZONE', TIME_ZONE if 'TIME_ZONE' in locals())
-TIME_ZONE_DISPLAYED_FOR_DEADLINES = os.getenv('TIME_ZONE_DISPLAYED_FOR_DEADLINES', TIME_ZONE_DISPLAYED_FOR_DEADLINES if 'TIME_ZONE_DISPLAYED_FOR_DEADLINES' in locals())
-UNIVERSITY_EMAIL = os.getenv('UNIVERSITY_EMAIL', UNIVERSITY_EMAIL if 'UNIVERSITY_EMAIL' in locals())
+TIME_ZONE = os.getenv('TIME_ZONE', locals().get('TIME_ZONE'))
+TIME_ZONE_DISPLAYED_FOR_DEADLINES = os.getenv('TIME_ZONE_DISPLAYED_FOR_DEADLINES', locals().get('TIME_ZONE_DISPLAYED_FOR_DEADLINES'))
+UNIVERSITY_EMAIL = os.getenv('UNIVERSITY_EMAIL', locals().get('UNIVERSITY_EMAIL'))
 
 WIKI_ENABLED = os.getenv('WIKI_ENABLED', WIKI_ENABLED if 'WIKI_ENABLED' in locals() else True)
 
@@ -202,28 +202,28 @@ DATABASES = {
     "default": {
         "ATOMIC_REQUESTS": True,
         "CONN_MAX_AGE": 0,
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": os.getenv('DATABASES__default__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__default__HOST', '127.0.0.1'),
         "NAME": "edxapp",
-        "password": os.getenv('DATABASES__default__password', ''),
+        "PASSWORD": os.getenv('DATABASES__default__password', ''),
         "PORT": "3306",
         "USER": "edxapp001"
     },
     "read_replica": {
         "CONN_MAX_AGE": 0,
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": os.getenv('DATABASES__read_replica__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__read_replica__HOST', '127.0.0.1'),
         "NAME": "edxapp",
-        "password": os.getenv('DATABASES__read_replica__password', '127.0.0.1'),
+        "PASSWORD": os.getenv('DATABASES__read_replica__password', ''),
         "PORT": "3306",
         "USER": "edxapp001"
     },
     "student_module_history": {
         "CONN_MAX_AGE": 0,
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": os.getenv('DATABASES__student_module_history__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__student_module_history__HOST', '127.0.0.1'),
         "NAME": "edxapp_csmh",
-        "password": os.getenv('DATABASES__student_module_history__password', ''),
+        "PASSWORD": os.getenv('DATABASES__student_module_history__password', ''),
         "PORT": "3306",
         "USER": "edxapp001"
     }
@@ -245,8 +245,8 @@ DOC_STORE_CONFIG = {
 
 DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE', DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in locals() else 'django.core.files.storage.FileSystemStorage')
 
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', EMAIL_HOST_PASSWORD if 'EMAIL_HOST_PASSWORD' in locals())
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', EMAIL_HOST_USER if 'EMAIL_HOST_USER' in locals())
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', locals().get('EMAIL_HOST_PASSWORD'))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', locals().get('EMAIL_HOST_USER'))
 
 MODULESTORE = {
     "default": {
