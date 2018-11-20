@@ -76,7 +76,7 @@ CACHES = {
             os.getenv('CACHES__staticfiles__LOCATION', '127.0.0.1:11211')
         ]
     }
-},
+}
 
 CELERY_BROKER_HOSTNAME = os.getenv('CELERY_BROKER_HOSTNAME', CELERY_BROKER_HOSTNAME if 'CELERY_BROKER_HOSTNAME' in locals() else '127.0.0.1')
 CELERY_BROKER_TRANSPORT = os.getenv('CELERY_BROKER_TRANSPORT', CELERY_BROKER_TRANSPORT if 'CELERY_BROKER_TRANSPORT' in locals() else 'amqp')
@@ -131,7 +131,7 @@ MEDIA_URL = os.getenv('MEDIA_URL', MEDIA_URL if 'MEDIA_URL' in locals() else '/m
 
 NPOED_MAKO_TEMPLATES = [
     os.getenv('NPOED_MAKO_TEMPLATES', NPOED_MAKO_TEMPLATES[0] if 'NPOED_MAKO_TEMPLATES' in locals() else '')
-],
+]
 
 OAUTH_OIDC_ISSUER = os.getenv('OAUTH_OIDC_ISSUER', OAUTH_OIDC_ISSUER if 'OAUTH_OIDC_ISSUER' in locals() else '/oauth2')
 
@@ -200,7 +200,7 @@ CONTENTSTORE = {
         "ssl": False,
         "user": "edxapp"
     }
-},
+}
 
 DATABASES = {
     "default": {
@@ -245,7 +245,7 @@ DOC_STORE_CONFIG = {
     "socketTimeoutMS": 3000,
     "ssl": False,
     "user": "edxapp"
-},
+}
 
 MODULESTORE = {
     "default": {
@@ -308,7 +308,7 @@ RAVEN_CONFIG = {
     "tags": {
         "env": os.getenv('RAVEN_CONFIG__tags__env', '')
     }
-},
+}
 
 CELERY_BROKER_USER = os.getenv('CELERY_BROKER_USER', CELERY_BROKER_USER if 'CELERY_BROKER_USER' in locals() else 'celery')
 
