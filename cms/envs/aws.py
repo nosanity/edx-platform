@@ -351,7 +351,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql", 
         "HOST": "127.0.0.1", 
         "NAME": "edxapp", 
-        "password": "***", 
+        "PASSWORD": "***", 
         "PORT": "3306", 
         "USER": "edxapp001"
     }, 
@@ -360,7 +360,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql", 
         "HOST": "127.0.0.1", 
         "NAME": "edxapp", 
-        "password": "***", 
+        "PASSWORD": "***", 
         "PORT": "3306", 
         "USER": "edxapp001"
     }, 
@@ -369,7 +369,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql", 
         "HOST": "127.0.0.1", 
         "NAME": "edxapp_csmh", 
-        "password": "***", 
+        "PASSWORD": "***", 
         "PORT": "3306", 
         "USER": "edxapp001"
     }
