@@ -550,6 +550,39 @@ if os.environ.get('USE_DATABASE_SETTINGS_ONLY_FROM_ENVIRON'):
 # The normal database user does not have enough permissions to run migrations.
 # Migrations are run with separate credentials, given as DB_MIGRATION_*
 # environment variables
+
+# EDX-156 jira.ciot temporary dirty hack for docker
+DATABASES = {
+    "default": {
+        "ATOMIC_REQUESTS": True, 
+        "CONN_MAX_AGE": 0, 
+        "ENGINE": "django.db.backends.mysql", 
+        "HOST": "127.0.0.1", 
+        "NAME": "edxapp", 
+        "PASSWORD": "***", 
+        "PORT": "3306", 
+        "USER": "edxapp001"
+    }, 
+    "read_replica": {
+        "CONN_MAX_AGE": 0, 
+        "ENGINE": "django.db.backends.mysql", 
+        "HOST": "127.0.0.1", 
+        "NAME": "edxapp", 
+        "PASSWORD": "***", 
+        "PORT": "3306", 
+        "USER": "edxapp001"
+    }, 
+    "student_module_history": {
+        "CONN_MAX_AGE": 0, 
+        "ENGINE": "django.db.backends.mysql", 
+        "HOST": "127.0.0.1", 
+        "NAME": "edxapp_csmh", 
+        "PASSWORD": "***", 
+        "PORT": "3306", 
+        "USER": "edxapp001"
+    }
+}
+
 for name, database in DATABASES.items():
     if name != 'read_replica':
         database.update({
