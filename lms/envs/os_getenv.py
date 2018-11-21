@@ -340,7 +340,7 @@ RAVEN_CONFIG = {
 }
 
 PLP_API_KEY = os.getenv('PLP_API_KEY', PLP_API_KEY if 'PLP_API_KEY' in locals() else '')
-SSO_API_KEY = os.getenv('SSO_API_KEY', SSO_API_KEY if SSO_API_KEY in locals() else '')
+SSO_API_KEY = os.getenv('SSO_API_KEY', SSO_API_KEY if 'SSO_API_KEY' in locals() else '')
 SSO_API_TOKEN = os.getenv('SSO_API_TOKEN', SSO_API_TOKEN if 'SSO_API_TOKEN' in locals() else '')
 
 VERIFY_STUDENT = {
