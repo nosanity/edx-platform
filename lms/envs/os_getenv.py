@@ -193,6 +193,33 @@ WIKI_ENABLED = os.getenv('WIKI_ENABLED', WIKI_ENABLED if 'WIKI_ENABLED' in local
 
 
 ##Auth
+CONTENTSTORE = {
+    "ADDITIONAL_OPTIONS": {},
+    "DOC_STORE_CONFIG": {
+        "collection": "modulestore",
+        "connectTimeoutMS": 2000,
+        "db": "edxapp",
+        "host": [
+            os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__host', '127.0.0.1')
+        ],
+        "password": os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__password', ''),
+        "port": 27017,
+        "socketTimeoutMS": 3000,
+        "ssl": False,
+        "user": "edxapp"
+    },
+    "ENGINE": "xmodule.contentstore.mongo.MongoContentStore",
+    "OPTIONS": {
+        "db": "edxapp",
+        "host": [
+            os.getenv('CONTENTSTORE__OPTIONS__host', '127.0.0.1')
+        ],
+        "password": os.getenv('CONTENTSTORE__OPTIONS__password', ''),
+        "port": 27017,
+        "ssl": False,
+        "user": "edxapp"
+    }
+}
 CELERY_BROKER_USER = os.getenv('CELERY_BROKER_USER', CELERY_BROKER_USER if 'CELERY_BROKER_USER' in locals() else 'celery')
 
 CELERY_BROKER_PASSWORD = os.getenv('CELERY_BROKER_PASSWORD', CELERY_BROKER_PASSWORD if 'CELERY_BROKER_PASSWORD' in locals() else '')
