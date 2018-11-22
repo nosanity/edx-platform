@@ -328,7 +328,7 @@ MODULESTORE = {
             ]
         }
     }
-},
+}
 
 PROCTORING_BACKEND_PROVIDERS = {
     "dummy": {
