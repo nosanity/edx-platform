@@ -166,6 +166,11 @@ SESSION_COOKIE_NAME = os.getenv('SESSION_COOKIE_NAME', SESSION_COOKIE_NAME if 'S
 SITE_NAME = os.getenv('SITE_NAME', locals().get('SITE_NAME'))
 
 SSO_NPOED_URL = os.getenv('SSO_NPOED_URL', locals().get('SSO_NPOED_URL'))
+if SSO_NPOED_URL:
+    SSO_NPOED_URL = SSO_NPOED_URL.rstrip('/')
+SSO_API_URL = '%s/api-edx/' % SSO_NPOED_URL
+SOCIAL_AUTH_LOGOUT_URL = '%s/logout/' % SSO_NPOED_URL
+
 STATIC_ROOT_BASE = os.getenv('STATIC_ROOT_BASE', STATIC_ROOT_BASE if 'STATIC_ROOT_BASE' in locals() else '/edx/var/edxapp/staticfiles')
 STATIC_URL_BASE = os.getenv('STATIC_ROOT_URL', STATIC_URL_BASE if 'STATIC_URL_BASE' in locals() else '/static/')
 
