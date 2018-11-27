@@ -370,6 +370,8 @@ PLP_API_KEY = os.getenv('PLP_API_KEY', PLP_API_KEY if 'PLP_API_KEY' in locals() 
 SSO_API_KEY = os.getenv('SSO_API_KEY', SSO_API_KEY if 'SSO_API_KEY' in locals() else '')
 SSO_API_TOKEN = os.getenv('SSO_API_TOKEN', SSO_API_TOKEN if 'SSO_API_TOKEN' in locals() else '')
 
+REDIRECT_IS_HTTPS = str(os.getenv('REDIRECT_IS_HTTPS', True)) == 'True'
+
 VERIFY_STUDENT = {
     "DAYS_GOOD_FOR": 365,
     "EXPIRING_SOON_WINDOW": 28,
