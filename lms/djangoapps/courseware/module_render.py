@@ -614,7 +614,7 @@ def get_module_system_for_user(user, student_data,  # TODO  # pylint: disable=to
         if staff_access:
             block_wrappers.append(partial(add_staff_markup, user, instructor_access, disable_staff_debug_info))
 
-    if settings.GRADING_TYPE == 'vertical':
+    if course.enable_vertical_grading:
         block_wrappers.append(partial(add_grading_markup, course))
 
     # These modules store data using the anonymous_student_id as a key.

@@ -7,7 +7,6 @@ from cStringIO import StringIO
 from datetime import datetime, timedelta
 
 import requests
-from django.conf import settings
 from lazy import lazy
 from lxml import etree
 from openedx.core.lib.license import LicenseMixin
@@ -24,6 +23,8 @@ from xmodule.seq_module import SequenceDescriptor, SequenceModule
 from xmodule.tabs import CourseTabList, InvalidTabsException
 from .fields import Date
 
+from django.conf import settings
+
 log = logging.getLogger(__name__)
 
 # Make '_' a no-op so we can scrape strings. Using lambda instead of
@@ -33,6 +34,9 @@ _ = lambda text: text
 CATALOG_VISIBILITY_CATALOG_AND_ABOUT = "both"
 CATALOG_VISIBILITY_ABOUT = "about"
 CATALOG_VISIBILITY_NONE = "none"
+
+ENABLE_VERTICAL_GRADING_BY_DEFAULT = settings.DEFAULT_GRADING_TYPE == "vertical"
+
 
 class GradingTypeError(Exception):
     """An error occurred when grading type is unrecognized."""
@@ -878,6 +882,13 @@ class CourseFields(object):
         scope=Scope.settings,
     )
 
+    enable_vertical_grading = Boolean(
+        display_name=_("Enable vertical grading"),
+        help="",
+        scope=Scope.settings,
+        default=ENABLE_VERTICAL_GRADING_BY_DEFAULT
+    )
+
 
 class CourseModule(CourseFields, SequenceModule):  # pylint: disable=abstract-method
     """
@@ -1086,7 +1097,7 @@ class CourseDescriptor(CourseFields, SequenceDescriptor, LicenseMixin):
 
     @property
     def grader(self):
-        return grader_from_conf(self.raw_grader)
+        return grader_from_conf(self.raw_grader, self.enable_vertical_grading)
 
     @property
     def raw_grader(self):
@@ -1237,13 +1248,16 @@ class CourseDescriptor(CourseFields, SequenceDescriptor, LicenseMixin):
         """
         return course_metadata_utils.sorting_score(self.start, self.advertised_start, self.announcement)
 
+    def _get_grading_type(self):
+        return 'vertical' if self.enable_vertical_grading else 'sequential'
+
     @lazy
     def grading(self):
         """
         Returns current grading strategy for the course. It is a class that
         contains methods used for the grading.
         """
-        name = settings.GRADING_TYPE
+        name = self._get_grading_type()
         extension = ExtensionManager(namespace='openedx.grading_policy')
         try:
             return extension[name].plugin
