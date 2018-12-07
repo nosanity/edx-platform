@@ -64,7 +64,7 @@ class AssignmentFormatGrader(CourseGrader):
         self.starting_index = starting_index
         self.hide_average = hide_average
 
-    def grade(self, grade_sheet, generate_random_scores=False):
+    def grade(self, grade_sheet, generate_random_scores=False, unpublished_graded_verticals={}):
         def total_with_drops(breakdown, drop_count):
             """
             Calculates total score for a section while dropping lowest scores
