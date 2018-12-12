@@ -1034,7 +1034,7 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
 urlpatterns += (
     # Extend API
     url(r'^api/extended/', include('open_edx_api_extension.urls', namespace='api_extension')),
-    url(r'^social-logout', 'sso_edx_npoed.views.logout', name='social-logout'),
+    url(r'^social-logout', 'sso_edx_tp.views.logout', name='social-logout'),
 )
 
 if settings.ORA2_FILEUPLOAD_BACKEND == 'filesystem':
@@ -1044,5 +1044,5 @@ if settings.ORA2_FILEUPLOAD_BACKEND == 'filesystem':
     )
 
 urlpatterns += (
-    url(r'^', include('sso_edx_npoed.sso_api_urls')),
+    url(r'^', include('sso_edx_tp.sso_api_urls')),
 )

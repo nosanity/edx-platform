@@ -22,28 +22,28 @@ if is_docker():
         use_stsos=True
     )
 
-SSO_NPOED_URL = ENV_TOKENS.get('SSO_NPOED_URL', 'http://sso.local.se:8081').rstrip('/')
+SSO_TP_URL = ENV_TOKENS.get('SSO_TP_URL', 'http://sso.local.se:8081').rstrip('/')
 
-SSO_API_URL = '%s/api-edx/' % SSO_NPOED_URL
+SSO_API_URL = '%s/api-edx/' % SSO_TP_URL
 SSO_API_TOKEN = AUTH_TOKENS.get('SSO_API_TOKEN')
 
 SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
-SOCIAL_AUTH_LOGOUT_URL = '%s/logout/' % SSO_NPOED_URL
+SOCIAL_AUTH_LOGOUT_URL = '%s/logout/' % SSO_TP_URL
 SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 
 MIDDLEWARE_CLASSES += (
-    'sso_edx_npoed.middleware.SeamlessAuthorization',
+    'sso_edx_tp.middleware.SeamlessAuthorization',
 )
 
-SSO_NPOED_BACKEND_NAME = 'sso_npoed_cms-oauth2'
-LOGIN_URL = '/auth/login/%s/' % SSO_NPOED_BACKEND_NAME
+SSO_TP_BACKEND_NAME = 'sso_tp_cms-oauth2'
+LOGIN_URL = '/auth/login/%s/' % SSO_TP_BACKEND_NAME
 
 PLP_URL = ENV_TOKENS.get('PLP_URL', 'http://plp.local.se:8080').rstrip('/')
 
-NPOED_MAKO_TEMPLATES = ENV_TOKENS.get('NPOED_MAKO_TEMPLATES',
-                                      ['/edx/app/edxapp/venvs/edxapp/src/sso-edx-npoed/sso_edx_npoed/templates/cms/'])
+TP_MAKO_TEMPLATES = ENV_TOKENS.get('TP_MAKO_TEMPLATES',
+            ['/edx/app/edxapp/venvs/edxapp/src/sso-edx-tp/sso_edx_tp/templates/cms/'])
 
-MAKO_TEMPLATES['main'] = NPOED_MAKO_TEMPLATES + MAKO_TEMPLATES['main']
+MAKO_TEMPLATES['main'] = TP_MAKO_TEMPLATES + MAKO_TEMPLATES['main']
 
 # Copy-paste base third party auth settings from lms
 ##### Third-party auth options ################################################
@@ -92,7 +92,7 @@ if FEATURES['EVMS_TURN_ON']:
     EVMS_URL = ENV_TOKENS.get('EVMS_URL', None)
     EVMS_API_KEY = AUTH_TOKENS.get('EVMS_API_KEY', None)
 
-LOCALE_PATHS = (REPO_ROOT + "/eduscaled/npoed_translations", ) + LOCALE_PATHS
+LOCALE_PATHS = (REPO_ROOT + "/eduscaled/tp_translations", ) + LOCALE_PATHS
 
 ORA_PATH_VENV = 'venvs/edxapp/lib/python2.7/site-packages/openassessment'
 ORA_LOCALE_PATH = '{}/{}/locale'.format(PROJECT_ROOT.dirname().dirname(), ORA_PATH_VENV)
@@ -110,10 +110,6 @@ COMMENTS_SERVICE_URL = ENV_TOKENS.get('COMMENTS_SERVICE_URL', '')
 COMMENTS_SERVICE_KEY = ENV_TOKENS.get('COMMENTS_SERVICE_KEY', '')
 
 COPYRIGHT_YEAR = "2018"
-
-INSTALLED_APPS += ('npoed_grading_features',)
-FEATURES["ENABLE_GRADING_FEATURES"] = True
-VERTICAL_GRADING_DEFAULT = True
 
 FEATURES['ENABLE_CMS_API'] = True
 if FEATURES['ENABLE_CMS_API']:

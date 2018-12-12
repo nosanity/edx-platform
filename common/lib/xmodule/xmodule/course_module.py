@@ -35,7 +35,7 @@ CATALOG_VISIBILITY_CATALOG_AND_ABOUT = "both"
 CATALOG_VISIBILITY_ABOUT = "about"
 CATALOG_VISIBILITY_NONE = "none"
 
-ENABLE_VERTICAL_GRADING_BY_DEFAULT = settings.DEFAULT_GRADING_TYPE == "vertical"
+ENABLE_VERTICAL_GRADING_BY_DEFAULT = getattr(settings, 'DEFAULT_GRADING_TYPE', 'sequential') == 'vertical'
 
 
 class GradingTypeError(Exception):

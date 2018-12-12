@@ -2,39 +2,39 @@ from devstack import *
 
 SSO_ENABLED = ENV_TOKENS.get('SSO_ENABLED', False)
 
-SSO_NPOED_URL = ''
+SSO_TP_URL = ''
 
 if SSO_ENABLED:
-    SSO_NPOED_URL = ENV_TOKENS.get('SSO_NPOED_URL', 'http://sso.local.se:8081')
-    SSO_API_URL = '%s/api-edx/' % SSO_NPOED_URL
+    SSO_TP_URL = ENV_TOKENS.get('SSO_TP_URL', 'http://sso.local.se:8081')
+    SSO_API_URL = '%s/api-edx/' % SSO_TP_URL
     SSO_API_TOKEN = ENV_TOKENS.get('SSO_API_TOKEN', '123456')
 
     SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
-    SOCIAL_AUTH_LOGOUT_URL = '%s/logout/' % SSO_NPOED_URL
+    SOCIAL_AUTH_LOGOUT_URL = '%s/logout/' % SSO_TP_URL
     SOCIAL_AUTH_RAISE_EXCEPTIONS = True
-    # We should login always with npoed-sso. There is specific backend for cms
-    # from sso_edx_npoed.backends.npoed import NpoedBackendCMS
-    # NpoedBackendCMS.name
-    SSO_NPOED_BACKEND_NAME = 'sso_npoed_cms-oauth2'
-    LOGIN_URL = '/auth/login/%s/' % SSO_NPOED_BACKEND_NAME
+    # We should login always with tp-sso. There is specific backend for cms
+    # from sso_edx_tp.backends.tp import TpBackendCMS
+    # TpBackendCMS.name
+    SSO_TP_BACKEND_NAME = 'sso_tp_cms-oauth2'
+    LOGIN_URL = '/auth/login/%s/' % SSO_TP_BACKEND_NAME
 
-    MIDDLEWARE_CLASSES += ('sso_edx_npoed.middleware.SeamlessAuthorization',)
+    MIDDLEWARE_CLASSES += ('sso_edx_tp.middleware.SeamlessAuthorization',)
 
-    ROOT_URLCONF = 'sso_edx_npoed.cms_urls'
+    ROOT_URLCONF = 'sso_edx_tp.cms_urls'
 
     FEATURES['ENABLE_THIRD_PARTY_AUTH'] = True
     THIRD_PARTY_AUTH_BACKENDS = [
-        'sso_edx_npoed.backends.npoed.NpoedBackend',
-        'sso_edx_npoed.backends.npoed.NpoedBackendCMS',
+        'sso_edx_tp.backends.tp.TpBackend',
+        'sso_edx_tp.backends.tp.TpBackendCMS',
     ]
     AUTHENTICATION_BACKENDS = THIRD_PARTY_AUTH_BACKENDS + list(AUTHENTICATION_BACKENDS)
 
     SOCIAL_AUTH_PIPELINE_TIMEOUT = 30
 
     # Add extra dir for mako templates finder
-    NPOED_MAKO_TEMPLATES = ['/edx/app/edxapp/venvs/edxapp/src/sso-edx-npoed/sso_edx_npoed/templates/cms', ]
+    TP_MAKO_TEMPLATES = ['/edx/app/edxapp/venvs/edxapp/src/sso-edx-tp/sso_edx_tp/templates/cms', ]
 
-    MAKO_TEMPLATES['main'] = NPOED_MAKO_TEMPLATES + MAKO_TEMPLATES['main']
+    MAKO_TEMPLATES['main'] = TP_MAKO_TEMPLATES + MAKO_TEMPLATES['main']
 
 # video manager
 EVMS_URL = ENV_TOKENS.get('EVMS_URL', None)
@@ -72,7 +72,7 @@ PROCTORING_BACKEND_PROVIDERS = {
             "crypto_key": "123456789012345678901234",
             "exam_register_endpoint": "{add endpoint here}",
             "exam_sponsor": "Examus",
-            "organization": "NPOED",
+            "organization": "TP",
             "secret_key": "{add SoftwareSecure secret key}",
             "secret_key_id": "{add SoftwareSecure secret key id}",
             "software_download_url": "https://chrome.google.com/webstore/detail/examus/apippgiggejegjpimfjnaigmanampcjg"
@@ -107,7 +107,7 @@ PROCTORING_BACKEND_PROVIDERS = {
         }
     },
     "WEB_ASSISTANT": {
-        "class": "npoed.backends.assistant.NPOEDBackendProvider",
+        "class": "tp.backends.assistant.TPBackendProvider",
         "options": {
             "crypto_key": "123456789012345678901234",
             "exam_register_endpoint": "https://proctor.local.se:8002/api/exam_register/",

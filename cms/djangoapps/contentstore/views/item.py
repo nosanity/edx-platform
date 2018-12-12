@@ -46,7 +46,6 @@ from contentstore.views.helpers import (
 from contentstore.views.preview import get_preview_fragment
 from edxmako.shortcuts import render_to_string
 from models.settings.course_grading import CourseGradingModel
-from npoed_grading_features import enable_vertical_grading
 from openedx.core.lib.gating import api as gating_api
 from openedx.core.lib.xblock_utils import request_token, wrap_xblock
 from static_replace import replace_static_urls
@@ -1054,7 +1053,6 @@ def _get_gating_info(course, xblock):
     return info
 
 
-@enable_vertical_grading
 def create_xblock_info(xblock, data=None, metadata=None, include_ancestor_info=False, include_child_info=False,
                        course_outline=False, include_children_predicate=NEVER, parent_xblock=None, graders=None,
                        user=None, course=None, is_concise=False):

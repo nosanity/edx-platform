@@ -6,12 +6,12 @@ import models
 from .utils import CommentClientPaginatedResult, CommentClientRequestError, merge_dict, perform_request
 
 try:
-    from sso_edx_npoed.decorators import comment_client_user_npoed_dec
+    from sso_edx_tp.decorators import comment_client_user_tp_dec
 except ImportError:
-    def comment_client_user_npoed_dec(cls): return cls
+    def comment_client_user_tp_dec(cls): return cls
 
 
-@comment_client_user_npoed_dec
+@comment_client_user_tp_dec
 class User(models.Model):
 
     accessible_fields = [

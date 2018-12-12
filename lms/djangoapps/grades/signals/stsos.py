@@ -5,11 +5,11 @@ from datetime import datetime
 
 from logging import getLogger
 
+from django.conf import settings
 from django.core.cache import cache
-from django.dispatch import receiver
 
-from student.models import UserProfile, ENROLL_STATUS_CHANGE, EnrollStatusChange
-from opaque_keys.edx.keys import CourseKey, UsageKey
+from student.models import UserProfile, EnrollStatusChange
+from opaque_keys.edx.keys import UsageKey
 from opaque_keys.edx.locator import CourseLocator
 from xmodule.modulestore.django import modulestore
 
@@ -36,7 +36,7 @@ def stsos_data(kwargs):
     stsos_cache_key = "Stsos_Course_Ids_Json"
     stsos_ids = cache.get(stsos_cache_key)
     if not stsos_ids:
-        stsos_ids = requests.get('https://openedu.ru/api/courses/stsos_ids/?format=json').json()
+        stsos_ids = requests.get('{}/api/courses/stsos_ids/?format=json'.format(settings.PLP_URL)).json()
         cache.set(stsos_cache_key, stsos_ids, 7200)
     prefix, plp_course_id, course_run = kwargs['course_id'].split('+')
     if not plp_course_id in stsos_ids:
@@ -103,7 +103,7 @@ def stsos_enroll_data(kwargs):
     stsos_cache_key = "Stsos_Course_Ids_Json"
     stsos_ids = cache.get(stsos_cache_key)
     if not stsos_ids:
-        stsos_ids = requests.get('https://openedu.ru/api/courses/stsos_ids/?format=json').json()
+        stsos_ids = requests.get('{}/api/courses/stsos_ids/?format=json'.format(settings.PLP_URL)).json()
         cache.set(stsos_cache_key, stsos_ids, 7200)
     prefix, plp_course_id, course_run = str(kwargs['course_id']).split('+')
     if not plp_course_id in stsos_ids:
@@ -141,7 +141,7 @@ def stsos_progress_data(kwargs):
     stsos_cache_key = "Stsos_Course_Ids_Json"
     stsos_ids = cache.get(stsos_cache_key)
     if not stsos_ids:
-        stsos_ids = requests.get('https://openedu.ru/api/courses/stsos_ids/?format=json').json()
+        stsos_ids = requests.get('{}/api/courses/stsos_ids/?format=json'.format(settings.PLP_URL)).json()
         cache.set(stsos_cache_key, stsos_ids, 7200)
     prefix, plp_course_id, course_run = str(kwargs['course_id']).split('+')
     if not plp_course_id in stsos_ids:

@@ -1,6 +1,5 @@
--e git+https://github.com/miptliot/npoed-sso-edx-client.git@ginkgo_dev#egg=sso_edx_npoed
+-e git+https://github.com/miptliot/tp-sso-edx-client.git@tp_ginkgo_dev#egg=sso_edx_tp
 -e git+https://github.com/miptliot/open_edx_api_extension_cms.git@ginkgo#egg=open_edx_api_extension_cms
 -e git+https://github.com/miptliot/open_edx_api_extension.git@ginkgo_dev#egg=open_edx_api_extension
--e git+https://github.com/miptliot/npoed_grading_features.git@ginkgo_dev#egg=vertical-grading
 
 -e git+https://github.com/miptliot/video_evms.git@master#egg=video_evms

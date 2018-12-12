@@ -1,4 +1,4 @@
-from npoed import *
+from tp import *
 
 import os
 
@@ -131,9 +131,9 @@ LOG_DIR = os.getenv('LOG_DIR', LOG_DIR if 'LOG_DIR' in locals() else '/edx/var/l
 MEDIA_ROOT = os.getenv('MEDIA_ROOT', MEDIA_ROOT if 'MEDIA_ROOT' in locals() else '/edx/var/edxapp/media/')
 MEDIA_URL = os.getenv('MEDIA_URL', MEDIA_URL if 'MEDIA_URL' in locals() else '/media/')
 
-NPOED_MAKO_TEMPLATES = [
-    os.getenv('NPOED_MAKO_TEMPLATES_LMS', NPOED_MAKO_TEMPLATES[0] if 'NPOED_MAKO_TEMPLATES' in locals() else '')
-]
+TP_MAKO_TEMPLATES = os.getenv('TP_MAKO_TEMPLATES_LMS', '/edx/app/edxapp/venv/src/sso-edx-tp/sso_edx_tp/templates/lms')
+TP_MAKO_TEMPLATES = TP_MAKO_TEMPLATES.split(',')
+MAKO_TEMPLATES['main'] = TP_MAKO_TEMPLATES + MAKO_TEMPLATES['main']
 
 OAUTH_OIDC_ISSUER = os.getenv('OAUTH_OIDC_ISSUER', OAUTH_OIDC_ISSUER if 'OAUTH_OIDC_ISSUER' in locals() else '/oauth2')
 
@@ -165,11 +165,11 @@ SESSION_COOKIE_NAME = os.getenv('SESSION_COOKIE_NAME', SESSION_COOKIE_NAME if 'S
 
 SITE_NAME = os.getenv('SITE_NAME', locals().get('SITE_NAME'))
 
-SSO_NPOED_URL = os.getenv('SSO_NPOED_URL', locals().get('SSO_NPOED_URL'))
-if SSO_NPOED_URL:
-    SSO_NPOED_URL = SSO_NPOED_URL.rstrip('/')
-SSO_API_URL = '%s/api-edx/' % SSO_NPOED_URL
-SOCIAL_AUTH_LOGOUT_URL = '%s/logout/' % SSO_NPOED_URL
+SSO_TP_URL = os.getenv('SSO_TP_URL', locals().get('SSO_TP_URL'))
+if SSO_TP_URL:
+    SSO_TP_URL = SSO_TP_URL.rstrip('/')
+SSO_API_URL = '%s/api-edx/' % SSO_TP_URL
+SOCIAL_AUTH_LOGOUT_URL = '%s/logout/' % SSO_TP_URL
 
 STATIC_ROOT_BASE = os.getenv('STATIC_ROOT_BASE', STATIC_ROOT_BASE if 'STATIC_ROOT_BASE' in locals() else '/edx/var/edxapp/staticfiles')
 STATIC_URL_BASE = os.getenv('STATIC_ROOT_URL', STATIC_URL_BASE if 'STATIC_URL_BASE' in locals() else '/static/')
@@ -342,7 +342,7 @@ PROCTORING_BACKEND_PROVIDERS = {
         "settings": {}
     },
     "WEB_ASSISTANT": {
-        "class": "npoed.backends.assistant.NPOEDBackendProvider",
+        "class": "tp.backends.assistant.TPBackendProvider",
         "options": {
             "crypto_key": os.getenv('WEB_ASSISTANT__crypto_key', ''),
             "exam_register_endpoint": os.getenv('WEB_ASSISTANT__exam_register_endpoint', 'http://localhost'),
@@ -350,7 +350,7 @@ PROCTORING_BACKEND_PROVIDERS = {
             "organization": "HoboHome",
             "secret_key": os.getenv('WEB_ASSISTANT__secret_key', ''),
             "secret_key_id": os.getenv('WEB_ASSISTANT__secret_key_id', ''),
-            "software_download_url": "https://test.npoed.ru/systemcheck/"
+            "software_download_url": "https://test.tp.ru/systemcheck/"
         },
         "settings": {
             "LINK_URLS": {

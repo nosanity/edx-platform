@@ -6,15 +6,13 @@ from django.utils.translation import ugettext as _
 from xblock.fields import Scope
 
 from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
-from npoed_grading_features import enable_vertical_grading
 
 from xblock_django.models import XBlockStudioConfigurationFlag
 from xmodule.modulestore.django import modulestore
 
-# NPOED: EDX-605
+# TP: EDX-605
 import requests
 
-@enable_vertical_grading
 class CourseMetadata(object):
     '''
     For CRUD operations on metadata fields which do not have specific editors
