@@ -367,9 +367,9 @@ PROCTORING_BACKEND_PROVIDERS = {
 RAVEN_DSN = os.getenv('DSN')
 if RAVEN_DSN:
     RAVEN_CONFIG = {
-        'dsn': RAVEN_DSN
-        #'release': raven.fetch_git_sha(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        'dsn': RAVEN_DSN,
         'release': os.getenv('RAVEN_CONFIG__tags__release', ''),
+        #'release': raven.fetch_git_sha(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
         'tags': {
             'env': os.getenv('RAVEN_CONFIG__tags__env', '')
     }
@@ -405,13 +405,13 @@ VERIFY_STUDENT = {
 }
 
 XQUEUE_INTERFACE = {
-    "basic_auth": [
-        "edx",
-        "edx"
+    'basic_auth': [
+        'edx',
+        'edx'
     ],
-    "django_auth": {
-        "password": os.getenv('XQUEUE_INTERFACE__django_auth__password', ''),
-        "username": "lms"
+    'django_auth': {
+        'password': os.getenv('XQUEUE_INTERFACE__django_auth__password', ''),
+        'username': 'lms'
     },
-    "url": "http://localhost:18040"
+    'url': os.getenv('XQUEUE_INTERFACE__url', 'http://localhost:18040'),
 }
