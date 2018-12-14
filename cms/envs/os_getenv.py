@@ -309,9 +309,9 @@ MODULESTORE = {
 RAVEN_DSN = os.getenv('DSN')
 if RAVEN_DSN:
     RAVEN_CONFIG = {
-        'dsn': RAVEN_DSN
-        #'release': raven.fetch_git_sha(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        'dsn': RAVEN_DSN,
         'release': os.getenv('RAVEN_CONFIG__tags__release', ''),
+        #'release': raven.fetch_git_sha(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
         'tags': {
             'env': os.getenv('RAVEN_CONFIG__tags__env', '')
     }
@@ -342,13 +342,13 @@ SSO_API_TOKEN = os.getenv('SSO_API_TOKEN', SSO_API_TOKEN if 'SSO_API_TOKEN' in l
 REDIRECT_IS_HTTPS = str(os.getenv('REDIRECT_IS_HTTPS', True)) == 'True'
 
 XQUEUE_INTERFACE = {
-    "basic_auth": [
-        "edx",
-        "edx"
+    'basic_auth': [
+        'edx',
+        'edx'
     ],
-    "django_auth": {
-        "password": os.getenv('XQUEUE_INTERFACE__django_auth__password', ''),
-        "username": "lms"
+    'django_auth': {
+        'password': os.getenv('XQUEUE_INTERFACE__django_auth__password', ''),
+        'username': 'lms'
     },
-    "url": "http://localhost:18040"
+    'url': os.getenv('XQUEUE_INTERFACE__url', 'http://localhost:18040'),
 }
