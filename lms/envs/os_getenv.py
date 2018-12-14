@@ -362,26 +362,26 @@ PROCTORING_BACKEND_PROVIDERS = {
         }
     }
 }
-
-
-
-
-import raven
-from raven.transport.requests import RequestsHTTPTransport
-from raven import Client
-RAVEN_CONFIG = {
-    'dsn': os.getenv('DSN'),
-    'transport': RequestsHTTPTransport,
-    'transport': raven.transport.RequestsHTTPTransport,
-    'release': raven.fetch_git_sha(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    'release': os.getenv('RAVEN_CONFIG__tags__release', ''),
-    'tags': {
-        'env': os.getenv('RAVEN_CONFIG__tags__env', '')
+    
+# ==== Raven ====
+RAVEN_DSN = os.getenv('DSN')
+if RAVEN_DSN:
+    RAVEN_CONFIG = {
+        'dsn': RAVEN_DSN
+        #'release': raven.fetch_git_sha(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        'release': os.getenv('RAVEN_CONFIG__tags__release', ''),
+        'tags': {
+            'env': os.getenv('RAVEN_CONFIG__tags__env', '')
     }
-
-# looks like it shoul be the last item in INSTALLED_APPS
-#APPS_TAIL += ( 'raven.contrib.django.raven_compat', )
-RAVEN_CLIENT = Client(**RAVEN_CONFIG)
+    }
+    try:
+        from raven.transport.requests import RequestsHTTPTransport
+        RAVEN_CONFIG['transport'] = RequestsHTTPTransport
+        INSTALLED_APPS += ('raven.contrib.django.raven_compat', )
+        RAVEN_CLIENT = Client(**RAVEN_CONFIG)
+    except ImportError:
+        print 'could not enable Raven!'
+# =====================================
 
 EDX_API_KEY = os.getenv('EDX_API_KEY', EDX_API_KEY if 'EDX_API_KEY' in locals() else '')
 PLP_API_KEY = os.getenv('PLP_API_KEY', PLP_API_KEY if 'PLP_API_KEY' in locals() else '')
