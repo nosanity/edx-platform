@@ -318,8 +318,8 @@ if RAVEN_DSN:
     }
     try:
         from raven.transport.requests import RequestsHTTPTransport
+        from raven import Client                                                
         RAVEN_CONFIG['transport'] = RequestsHTTPTransport
-        INSTALLED_APPS += ('raven.contrib.django.raven_compat', )
         RAVEN_CLIENT = Client(**RAVEN_CONFIG)
     except ImportError:
         print 'could not enable Raven!'
