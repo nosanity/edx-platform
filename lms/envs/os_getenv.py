@@ -280,6 +280,17 @@ DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE', DEFAULT_FILE_STORAGE if
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', locals().get('EMAIL_HOST_PASSWORD'))
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', locals().get('EMAIL_HOST_USER'))
 
+GRADES_DOWNLOAD = {                                                                                                                                                
+    "BUCKET": os.getenv('GRADES_DOWNLOAD_BUCKET', ''),                                                                                                                                                     
+    "CUSTOM_DOMAIN": os.getenv('GRADES_DOWNLOAD_CUSTOM_DOMAIN', ''),                                                                                                                                              
+    "ROOT_PATH": os.getenv('GRADES_DOWNLOAD_ROOT_PATH', ''),                                                                                                                                                  
+    "STORAGE_CLASS": os.getenv('GRADES_DOWNLOAD_STORAGE_CLASS', 'django.core.files.storage.FileSystemStorage'),                                                                                                   
+    "STORAGE_KWARGS": {                                                                                                                                               
+        "location": os.getenv('GRADES_DOWNLOAD_location', '/tmp/edx-s3/grades')                                                                                                                              
+    },                                                                                                                                                                
+    "STORAGE_TYPE": os.getenv('GRADES_DOWNLOAD_STORAGE_TYPE', '')                                                                                                                                                
+}
+
 MODULESTORE = {
     "default": {
         "ENGINE": "xmodule.modulestore.mixed.MixedModuleStore",
