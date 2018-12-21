@@ -286,7 +286,7 @@ GRADES_DOWNLOAD = {
     "ROOT_PATH": os.getenv('GRADES_DOWNLOAD_ROOT_PATH', ''),                                                                                                                                                  
     "STORAGE_CLASS": os.getenv('GRADES_DOWNLOAD_STORAGE_CLASS', 'django.core.files.storage.FileSystemStorage'),                                                                                                   
     "STORAGE_KWARGS": {                                                                                                                                               
-        "location": os.getenv('GRADES_DOWNLOAD_location', '/tmp/edx-s3/grades')                                                                                                                              
+        "location": os.getenv('GRADES_DOWNLOAD_location', '/edx/var/edxapp/grades')                                                                                                                              
     },                                                                                                                                                                
     "STORAGE_TYPE": os.getenv('GRADES_DOWNLOAD_STORAGE_TYPE', '')                                                                                                                                                
 }
