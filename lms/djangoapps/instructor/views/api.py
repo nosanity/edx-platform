@@ -95,6 +95,7 @@ from student.models import (
     unique_id_for_user
 )
 from student.roles import CourseFinanceAdminRole, CourseSalesAdminRole
+from student.auth import check_special_permissions
 from submissions import api as sub_api  # installed from the edx-submissions repository
 from util.file import (
     FileValidationException,
@@ -206,7 +207,7 @@ def require_level(level):
 
             if has_access(request.user, level, course):
                 return func(*args, **kwargs)
-            elif request.user.id in getattr(settings, 'USERS_WITH_SPECIAL_PERMS_IDS', []):
+            elif check_special_permissions(request.user):
                 return func(*args, **kwargs)
             else:
                 return HttpResponseForbidden()

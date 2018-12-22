@@ -51,6 +51,7 @@ from openedx.core.lib.xblock_utils import wrap_xblock
 from shoppingcart.models import Coupon, CourseRegCodeItem, PaidCourseRegistration
 from student.models import CourseEnrollment
 from student.roles import CourseFinanceAdminRole, CourseSalesAdminRole
+from student.auth import check_special_permissions
 from util.json_request import JsonResponse
 from xmodule.html_module import HtmlDescriptor
 from xmodule.modulestore.django import modulestore
@@ -184,14 +185,14 @@ def instructor_dashboard_2(request, course_id):
         settings.FEATURES.get('ENABLE_SPECIAL_EXAMS', False)
     )
 
-    if request.user.id in settings.USERS_WITH_SPECIAL_PERMS_IDS:
+    if check_special_permissions(request.user):
         access['admin'] = True
         can_see_special_exams = True
 
     if can_see_special_exams:
         sections.append(_section_special_exams(course, access))
 
-    if request.user.id in settings.USERS_WITH_SPECIAL_PERMS_IDS:
+    if check_special_permissions(request.user):
         access['admin'] = False
 
     # Certificates panel
