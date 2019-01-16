@@ -93,6 +93,7 @@ INSTALLED_APPS += (
     # Api extension for eduscaled
     'open_edx_api_extension',
     'video_evms',
+    'sso_edx_tp',
 )
 
 LOCALE_PATHS = (OPENEDX_ROOT + '/eduscaled/translations', ) + LOCALE_PATHS
