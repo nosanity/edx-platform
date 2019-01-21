@@ -329,6 +329,13 @@ CELERY_BROKER_USER = os.getenv('CELERY_BROKER_USER', CELERY_BROKER_USER if 'CELE
 
 CELERY_BROKER_PASSWORD = os.getenv('CELERY_BROKER_PASSWORD', CELERY_BROKER_PASSWORD if 'CELERY_BROKER_PASSWORD' in locals() else '')
 
+BROKER_URL = "{0}://{1}:{2}@{3}/{4}".format(CELERY_BROKER_TRANSPORT,
+                                            CELERY_BROKER_USER,
+                                            CELERY_BROKER_PASSWORD,
+                                            CELERY_BROKER_HOSTNAME,
+                                            CELERY_BROKER_VHOST)
+
+
 DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE', DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in locals() else 'django.core.files.storage.FileSystemStorage')
 
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', locals().get('EMAIL_HOST_PASSWORD' ))
