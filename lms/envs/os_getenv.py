@@ -431,3 +431,7 @@ XQUEUE_INTERFACE = {
     },
     'url': os.getenv('XQUEUE_INTERFACE__url', 'http://localhost:18040'),
 }
+
+SUPERUSER_USERNAME = os.getenv('SUPERUSER_USERNAME', 'admin')
+SUPERUSER_EMAIL = os.getenv('SUPERUSER_EMAIL', 'admin@{}'.format('.'.join(SITE_NAME.split('.')[1:]) if len(SITE_NAME.split('.')) > 2 else SITE_NAME))
+SUPERUSER_PASSWORD = os.getenv('SUPERUSER_PASSWORD')
