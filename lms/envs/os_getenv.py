@@ -4,8 +4,10 @@ import os
 
 
 ## Env
-BUGS_EMAIL = os.getenv('BUGS_EMAIL', locals().get('BUGS_EMAIL'))
-BULK_EMAIL_DEFAULT_FROM_EMAIL = os.getenv('BULK_EMAIL_DEFAULT_FROM_EMAIL', locals().get('BULK_EMAIL_DEFAULT_FROM_EMAIL'))
+PLATFORM_BASE_DOMAIN = os.getenv('PLATFORM_BASE_DOMAIN', 'example.com')
+PLATFORM_SCHEME = os.getenv('PLATFORM_SCHEME', 'https')
+BUGS_EMAIL = os.getenv('BUGS_EMAIL', 'bugs@{}'.format(PLATFORM_BASE_DOMAIN))
+BULK_EMAIL_DEFAULT_FROM_EMAIL = os.getenv('BULK_EMAIL_DEFAULT_FROM_EMAIL', 'bulk@{}'.format(PLATFORM_BASE_DOMAIN))
 
 CACHES = {
     "celery": {
@@ -83,16 +85,16 @@ CELERY_BROKER_HOSTNAME = os.getenv('CELERY_BROKER_HOSTNAME', CELERY_BROKER_HOSTN
 CELERY_BROKER_TRANSPORT = os.getenv('CELERY_BROKER_TRANSPORT', CELERY_BROKER_TRANSPORT if 'CELERY_BROKER_TRANSPORT' in locals() else 'amqp')
 CELERY_BROKER_USE_SSL = str(os.getenv('CELERY_BROKER_USE_SSL', CELERY_BROKER_USE_SSL if 'CELERY_BROKER_USE_SSL' in locals() else False)) == 'True'
 CELERY_BROKER_VHOST = os.getenv('CELERY_BROKER_VHOST', CELERY_BROKER_VHOST if 'CELERY_BROKER_VHOST' in locals() else '')
-CMS_BASE = os.getenv('CMS_BASE', CMS_BASE if 'CMS_BASE' in locals() else 'studio')
+CMS_BASE = os.getenv('CMS_BASE', '{}.{}'.format(os.getenv('SUB_DOMAIN_STUDIO', 'studio'), PLATFORM_BASE_DOMAIN))
 
 COMMENTS_SERVICE_KEY = os.getenv('COMMENTS_SERVICE_KEY', COMMENTS_SERVICE_KEY if 'COMMENTS_SERVICE_KEY' in locals() else '')
 COMMENTS_SERVICE_URL = os.getenv('COMMENTS_SERVICE_URL', COMMENTS_SERVICE_URL if 'COMMENTS_SERVICE_URL' in locals() else 'http://localhost:18080')
 COMPREHENSIVE_THEME_DIR = os.getenv('COMPREHENSIVE_THEME_DIR', COMPREHENSIVE_THEME_DIR if 'COMPREHENSIVE_THEME_DIR' in locals() else '/edx/app/edxapp/themes')
 
-CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', locals().get('CONTACT_EMAIL'))
-DEFAULT_FEEDBACK_EMAIL = os.getenv('DEFAULT_FEEDBACK_EMAIL', locals().get('DEFAULT_FEEDBACK_EMAIL'))
+CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'contact@{}'.format(PLATFORM_BASE_DOMAIN))
+DEFAULT_FEEDBACK_EMAIL = os.getenv('DEFAULT_FEEDBACK_EMAIL', 'feedback@{}'.format(PLATFORM_BASE_DOMAIN))
 DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE', DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in locals() else 'django.core.files.storage.FileSystemStorage')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', locals().get('DEFAULT_FROM_EMAIL'))
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'email@{}'.format(PLATFORM_BASE_DOMAIN))
 DEFAULT_SITE_THEME = os.getenv('DEFAULT_SITE_THEME', DEFAULT_SITE_THEME if 'DEFAULT_SITE_THEME' in locals() else '')
 
 MAIL_BACKEND = os.getenv('EMAIL_BACKEND', EMAIL_BACKEND if 'EMAIL_BACKEND' in locals() else 'django.core.mail.backends.smtp.EmailBackend')
@@ -123,8 +125,8 @@ FOOTER_ORGANIZATION_IMAGE = os.getenv('FOOTER_ORGANIZATION_IMAGE', FOOTER_ORGANI
 GITHUB_REPO_ROOT = os.getenv('GITHUB_REPO_ROOT', GITHUB_REPO_ROOT if 'GITHUB_REPO_ROOT' in locals() else '/edx/var/edxapp/data')
 
 LANGUAGE_CODE = os.getenv('LANGUAGE_CODE', LANGUAGE_CODE if 'LANGUAGE_CODE' in locals() else 'ru')
-LMS_BASE = os.getenv('LMS_BASE', LMS_BASE if 'LMS_BASE' in locals() else 'localhost')
-LMS_ROOT_URL = os.getenv('LMS_ROOT_URL', LMS_ROOT_URL if 'LMS_ROOT_URL' in locals() else 'http://localhost')
+LMS_BASE = os.getenv('LMS_BASE', '{}.{}'.format(os.getenv('SUB_DOMAIN_LMS', 'courses'), PLATFORM_BASE_DOMAIN))
+LMS_ROOT_URL = os.getenv('LMS_ROOT_URL', '{}://{}'.format(PLATFORM_SCHEME, LMS_BASE))
 LOCAL_LOGLEVEL = os.getenv('LOCAL_LOGLEVEL', LOCAL_LOGLEVEL if 'LOCAL_LOGLEVEL' in locals() else 'INFO')
 LOGGING_ENV = os.getenv('LOGGING_ENV', LOGGING_ENV if 'LOGGING_ENV' in locals() else 'sandbox')
 LOG_DIR = os.getenv('LOG_DIR', LOG_DIR if 'LOG_DIR' in locals() else '/edx/var/logs/edx')
@@ -135,13 +137,13 @@ TP_MAKO_TEMPLATES = os.getenv('TP_MAKO_TEMPLATES_LMS', '/edx/app/edxapp/venv/src
 TP_MAKO_TEMPLATES = TP_MAKO_TEMPLATES.split(',')
 MAKO_TEMPLATES['main'] = TP_MAKO_TEMPLATES + MAKO_TEMPLATES['main']
 
-OAUTH_OIDC_ISSUER = os.getenv('OAUTH_OIDC_ISSUER', OAUTH_OIDC_ISSUER if 'OAUTH_OIDC_ISSUER' in locals() else '/oauth2')
+OAUTH_OIDC_ISSUER = os.getenv('OAUTH_OIDC_ISSUER', '{}/oauth2'.format(LMS_ROOT_URL))
 
 ORA2_FILEUPLOAD_BACKEND = os.getenv('ORA2_FILEUPLOAD_BACKEND', ORA2_FILEUPLOAD_BACKEND if 'ORA2_FILEUPLOAD_BACKEND' in locals() else 'filesystem')
 ORA2_FILE_PREFIX = os.getenv('ORA2_FILE_PREFIX', ORA2_FILE_PREFIX if 'ORA2_FILE_PREFIX' in locals()else 'ora2')
 
 PLATFORM_NAME = os.getenv('PLATFORM_NAME', locals().get('PLATFORM_NAME'))
-PLP_URL = os.getenv('PLP_URL', locals().get('PLP_URL'))
+PLP_URL = os.getenv('PLP_URL', '{}://{}'.format(PLATFORM_SCHEME, PLATFORM_BASE_DOMAIN))
 PLP_BAN_ON = os.getenv('PLP_BAN_ON', PLP_BAN_ON if 'PLP_BAN_ON' in locals() else False)
 
 PROCTORING_SETTINGS = {
@@ -157,15 +159,15 @@ PROCTORING_SETTINGS = {
     "SOFTWARE_SECURE_CLIENT_TIMEOUT": 383
 }
 
-PRESS_EMAIL = os.getenv('PRESS_EMAIL', locals().get('PRESS_EMAIL'))
-SERVER_EMAIL = os.getenv('SERVER_EMAIL', locals().get('SERVER_EMAIL'))
+PRESS_EMAIL = os.getenv('PRESS_EMAIL', 'press@{}'.format(PLATFORM_BASE_DOMAIN))
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'server@{}'.format(PLATFORM_BASE_DOMAIN))
 
 SESSION_COOKIE_DOMAIN = os.getenv('SESSION_COOKIE_DOMAIN', locals().get('SESSION_COOKIE_DOMAIN'))
 SESSION_COOKIE_NAME = os.getenv('SESSION_COOKIE_NAME', SESSION_COOKIE_NAME if 'SESSION_COOKIE_NAME' in locals() else 'sessionid')
 
-SITE_NAME = os.getenv('SITE_NAME', locals().get('SITE_NAME'))
+SITE_NAME = os.getenv('SITE_NAME', LMS_ROOT_URL)
 
-SSO_TP_URL = os.getenv('SSO_TP_URL', locals().get('SSO_TP_URL'))
+SSO_TP_URL = os.getenv('SSO_TP_URL', '{}://{}.{}'.format(PLATFORM_SCHEME, os.getenv('SUB_DOMAIN_SSO', 'sso'), PLATFORM_BASE_DOMAIN))
 if SSO_TP_URL:
     SSO_TP_URL = SSO_TP_URL.rstrip('/')
 SSO_API_URL = '%s/api-edx/' % SSO_TP_URL
@@ -175,7 +177,7 @@ STATIC_ROOT_BASE = os.getenv('STATIC_ROOT_BASE', STATIC_ROOT_BASE if 'STATIC_ROO
 STATIC_URL_BASE = os.getenv('STATIC_ROOT_URL', STATIC_URL_BASE if 'STATIC_URL_BASE' in locals() else '/static/')
 
 
-TECH_SUPPORT_EMAIL = os.getenv('TECH_SUPPORT_EMAIL', locals().get('TECH_SUPPORT_EMAIL'))
+TECH_SUPPORT_EMAIL = os.getenv('TECH_SUPPORT_EMAIL', 'tech@{}'.format(PLATFORM_BASE_DOMAIN))
 THEME_NAME = os.getenv('THEME_NAME', locals().get('THEME_NAME'))
 
 THIRD_PARTY_AUTH_BACKENDS_DEFAULT = locals().get('THIRD_PARTY_AUTH_BACKENDS', [])
@@ -192,7 +194,7 @@ THIRD_PARTY_AUTH_BACKENDS = THIRD_PARTY_AUTH_BACKENDS_OS if THIRD_PARTY_AUTH_BAC
 
 TIME_ZONE = os.getenv('TIME_ZONE', locals().get('TIME_ZONE'))
 TIME_ZONE_DISPLAYED_FOR_DEADLINES = os.getenv('TIME_ZONE_DISPLAYED_FOR_DEADLINES', locals().get('TIME_ZONE_DISPLAYED_FOR_DEADLINES'))
-UNIVERSITY_EMAIL = os.getenv('UNIVERSITY_EMAIL', locals().get('UNIVERSITY_EMAIL'))
+UNIVERSITY_EMAIL = os.getenv('UNIVERSITY_EMAIL', 'university@{}'.format(PLATFORM_BASE_DOMAIN))
 
 WIKI_ENABLED = os.getenv('WIKI_ENABLED', WIKI_ENABLED if 'WIKI_ENABLED' in locals() else True)
 
@@ -207,7 +209,7 @@ CONTENTSTORE = {
         "host": [
             os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__host', '127.0.0.1')
         ],
-        "password": os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__password', ''),
+        "password": os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__password', os.getenv('EDX_MONGODB_DEFAULT_PASSWORD', '')),
         "port": 27017,
         "socketTimeoutMS": 3000,
         "ssl": False,
@@ -219,7 +221,7 @@ CONTENTSTORE = {
         "host": [
             os.getenv('CONTENTSTORE__OPTIONS__host', '127.0.0.1')
         ],
-        "password": os.getenv('CONTENTSTORE__OPTIONS__password', ''),
+        "password": os.getenv('CONTENTSTORE__OPTIONS__password', os.getenv('EDX_MONGODB_DEFAULT_PASSWORD', '')),
         "port": 27017,
         "ssl": False,
         "user": "edxapp"
@@ -242,7 +244,7 @@ DATABASES = {
         "ENGINE": os.getenv('DATABASES__default__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__default__HOST', '127.0.0.1'),
         "NAME": "edxapp",
-        "PASSWORD": os.getenv('DATABASES__default__password', ''),
+        "PASSWORD": os.getenv('DATABASES__default__password', os.getenv('EDX_DATABASES_DEFAULT_PASSWORD', '')),
         "PORT": "3306",
         "USER": "edxapp001"
     },
@@ -251,7 +253,7 @@ DATABASES = {
         "ENGINE": os.getenv('DATABASES__read_replica__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__read_replica__HOST', '127.0.0.1'),
         "NAME": "edxapp",
-        "PASSWORD": os.getenv('DATABASES__read_replica__password', ''),
+        "PASSWORD": os.getenv('DATABASES__read_replica__password', os.getenv('EDX_DATABASES_DEFAULT_PASSWORD', '')),
         "PORT": "3306",
         "USER": "edxapp001"
     },
@@ -260,7 +262,7 @@ DATABASES = {
         "ENGINE": os.getenv('DATABASES__student_module_history__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__student_module_history__HOST', '127.0.0.1'),
         "NAME": "edxapp_csmh",
-        "PASSWORD": os.getenv('DATABASES__student_module_history__password', ''),
+        "PASSWORD": os.getenv('DATABASES__student_module_history__password', os.getenv('EDX_DATABASES_DEFAULT_PASSWORD', '')),
         "PORT": "3306",
         "USER": "edxapp001"
     }
@@ -273,7 +275,7 @@ DOC_STORE_CONFIG = {
     "host": [
         os.getenv('DOC_STORE_CONFIG__host', '127.0.0.1')
     ],
-    "password": os.getenv('DOC_STORE_CONFIG__password', ''),
+    "password": os.getenv('DOC_STORE_CONFIG__password', os.getenv('EDX_MONGODB_DEFAULT_PASSWORD', '')),
     "port": 27017,
     "socketTimeoutMS": 3000,
     "ssl": False,
@@ -310,7 +312,8 @@ MODULESTORE = {
                         "host": [
                             os.getenv('split__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__host', '127.0.0.1')
                         ],
-                        "password": os.getenv('split__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__password', ''),
+                        "password": os.getenv('split__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__password',
+                                              os.getenv('EDX_MONGODB_DEFAULT_PASSWORD', '')),
                         "port": 27017,
                         "socketTimeoutMS": 3000,
                         "ssl": False,
@@ -332,7 +335,8 @@ MODULESTORE = {
                         "host": [
                             os.getenv('draft__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__host', '127.0.0.1')
                         ],
-                        "password": os.getenv('draft__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__password', ''),
+                        "password": os.getenv('draft__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__password',
+                                              os.getenv('EDX_MONGODB_DEFAULT_PASSWORD', '')),
                         "port": 27017,
                         "socketTimeoutMS": 3000,
                         "ssl": False,
