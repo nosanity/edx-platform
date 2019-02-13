@@ -9,43 +9,22 @@ from datetime import datetime
 import pytz
 
 from openedx.core.djangoapps.lang_pref.api import footer_language_selector_is_enabled
+from branding.api import get_footer
+
+footer = get_footer()
 %>
 
 <div class="wrapper wrapper-footer">
-  <footer>
+  <footer id="footer-openedx" class="grid-container">
     <!-- This is super-ugly, don't use it! -->
     <div class="colophon">
       <nav class="nav-colophon" aria-label="${_('About')}">
       <ol>
-          <li class="nav-colophon-01">
-          <a id="about" href="${marketing_link('ABOUT')}">
-              ${_("About")}
-          </a>
+          % for item_num, link in enumerate(footer['navigation_links'], start=1):
+          <li class="nav-colophon-0${item_num}">
+              <a id="${link['name']}" href="${link['url']}">${link['title']}</a>
           </li>
-          %if marketing_link('JOBS') and marketing_link('JOBS') != '#':
-            <li class="nav-colophon-02">
-              <a id="jobs" href="${marketing_link('JOBS')}">
-                ${_("Jobs")}
-              </a>
-            </li>
-          %endif
-          %if marketing_link('NEWS') and marketing_link('NEWS') != '#':
-            <li class="nav-colophon-03">
-              <a id="news" href="${marketing_link('NEWS')}">
-                ${_("News")}
-              </a>
-            </li>
-          %endif
-          <li class="nav-colophon-04">
-          <a id="faq" href="${marketing_link('FAQ')}">
-              ${_("FAQ")}
-          </a>
-          </li>
-          <li class="nav-colophon-05">
-          <a id="contact" href="${marketing_link('CONTACT')}">
-              ${_("Contact")}
-          </a>
-          </li>
+          % endfor
       </ol>
       </nav>
 
@@ -75,30 +54,11 @@ from openedx.core.djangoapps.lang_pref.api import footer_language_selector_is_en
       </p>
       <nav class="nav-legal" aria-label="${_('Legal')}">
         <ul>
-        % if marketing_link('HONOR') and marketing_link('HONOR') != '#':
-          <li class="nav-legal-01">
-            <%
-              tos_link = u"<a href='{}'>".format(marketing_link('TOS'))
-              honor_link = u"<a href='{}'>".format(marketing_link('HONOR'))
-            %>
-            ${
-              _(
-                "{tos_link_start}Terms of Service{tos_link_end} and {honor_link_start}Honor Code{honor_link_end}").format(
-                tos_link_start=tos_link,
-                tos_link_end="</a>",
-                honor_link_start=honor_link,
-                honor_link_end="</a>",
-              )
-            }
-          </li>
-        % else:
-          <li class="nav-legal-01">
-            <a href="${marketing_link('TOS')}">${_("Terms of Service")}</a>
-          </li>
-        % endif
-          <li class="nav-legal-02">
-            <a href="${marketing_link('PRIVACY')}">${_("Privacy Policy")}</a>
-          </li>
+            % for item_num, link in enumerate(footer['legal_links'], start=1):
+              <li class="nav-legal-0${item_num}">
+                <a href="${link['url']}">${link['title']}</a>
+              </li>
+            % endfor
         </ul>
       </nav>
     </div>
