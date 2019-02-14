@@ -257,6 +257,10 @@ def _footer_legal_links():
 
 def _footer_business_links():
     """Return the business links to display in the footer. """
+    business_links = configuration_helpers.get_value('business_links', None)
+    if business_links:
+        return business_links
+
     platform_name = configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME)
 
     return [
@@ -318,6 +322,10 @@ def _footer_mobile_links(is_secure):
     Returns: list
 
     """
+    mobile_links = configuration_helpers.get_value('mobile_links', None)
+    if mobile_links:
+        return mobile_links
+
     platform_name = configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME)
 
     mobile_links = []
@@ -353,6 +361,8 @@ def _footer_logo_img(is_secure):
         Absolute url to logo
     """
     logo_name = configuration_helpers.get_value('FOOTER_ORGANIZATION_IMAGE', settings.FOOTER_ORGANIZATION_IMAGE)
+    if logo_name.startswith('http'):
+        return logo_name
     # `logo_name` is looked up from the configuration,
     # which falls back on the Django settings, which loads it from
     # `lms.env.json`, which is created and managed by Ansible. Because of
