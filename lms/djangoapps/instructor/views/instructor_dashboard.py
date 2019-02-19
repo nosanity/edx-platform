@@ -229,11 +229,7 @@ def instructor_dashboard_2(request, course_id):
     certificate_invalidations = CertificateInvalidation.get_certificate_invalidations(course_key)
 
     if course_shifts_enabled(course):
-        sections.append({
-            'section_key': 'course_shifts',
-            'section_display_name': _('Course Shifts'),
-            'course_id': unicode(course_key),
-        })
+        sections.append(_section_course_shifts(course_key))
 
     context = {
         'course': course,

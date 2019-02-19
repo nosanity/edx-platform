@@ -1,18 +1,18 @@
+import datetime
 import json
 
 from django.views.decorators.http import require_POST
-from dateutil.parser import parse
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.db.models import Q
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import HttpResponseForbidden
 from django.utils.translation import ugettext as _
 
-from .models import CourseShift, CourseShiftUser
-from edxmako.shortcuts import render_to_response
+from courseware.access import has_access
+from student.models import CourseEnrollment
+from .models import CourseShift, CourseShiftUser, allow_to_change_deadline, SHIFT_DATE_FORMAT
 from util.json_request import JsonResponse
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
@@ -20,27 +20,37 @@ from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
 
 
-def check_course_exists(func):
-    def wrapper(self, request, course_id):
-        try:
-            course_key = CourseKey.from_string(course_id)
-            course = modulestore().get_course(course_key)
-        except (InvalidKeyError, ItemNotFoundError):
-            return JsonResponse({"success": False, "errorMessage": _("Course not found")}, status=404)
-        return func(self, request, course)
-    return wrapper
+def check_course_exists(check_staff_permission=False):
+    def check_course_exists(func):
+        def wrapper(request, course_id):
+            try:
+                course_key = CourseKey.from_string(course_id)
+                course = modulestore().get_course(course_key)
+            except (InvalidKeyError, ItemNotFoundError):
+                return JsonResponse({"success": False, "errorMessage": _("Course not found")}, status=404)
+            if check_staff_permission:
+                allow = has_access(request.user, 'staff', course)
+                if allow:
+                    return func(request, course)
+                else:
+                    return HttpResponseForbidden()
+            else:
+                return func(request, course)
+        return wrapper
+    return check_course_exists
 
 
 @login_required
-@check_course_exists
+@check_course_exists(check_staff_permission=True)
 def get_course_shifts(request, course):
     data = CourseShift.objects.filter(course_key=course.id).order_by('start_date', 'enrollment_start_date')
-    return JsonResponse({"success": True, "data": [item.to_dict() for item in data]})
+    return JsonResponse({"success": True, "data": [item.to_dict(add_number_of_students=True) for item in data]})
 
 
 @login_required
 @require_POST
-@check_course_exists
+@check_course_exists(check_staff_permission=True)
+@transaction.atomic
 def update_course_shifts(request, course):
     try:
         posted_data = json.loads(request.body.decode('utf-8'))
@@ -78,7 +88,7 @@ def update_course_shifts(request, course):
         })
 
     try:
-        start_date = parse(start_date).date()
+        start_date = datetime.datetime.strptime(start_date, SHIFT_DATE_FORMAT)
     except ValueError as e:
         return JsonResponse({
             "success": False,
@@ -86,7 +96,7 @@ def update_course_shifts(request, course):
         })
 
     try:
-        enrollment_start_date = parse(enrollment_start_date).date()
+        enrollment_start_date = datetime.datetime.strptime(enrollment_start_date, SHIFT_DATE_FORMAT)
     except ValueError as e:
         return JsonResponse({
             "success": False,
@@ -94,7 +104,7 @@ def update_course_shifts(request, course):
         })
 
     try:
-        enrollment_end_date = parse(enrollment_end_date).date()
+        enrollment_end_date = datetime.datetime.strptime(enrollment_end_date, SHIFT_DATE_FORMAT)
     except ValueError as e:
         return JsonResponse({
             "success": False,
@@ -104,7 +114,7 @@ def update_course_shifts(request, course):
     if enrollment_start_date >= enrollment_end_date:
         return JsonResponse({
             "success": False,
-            "errorMessage": _("Enrollment Date must be after the Start Date")
+            "errorMessage": _("Enrollment End Date must be after the Enrollment Start Date")
         })
 
     if enrollment_start_date >= start_date:
@@ -139,7 +149,7 @@ def update_course_shifts(request, course):
             obj.enrollment_start_date = enrollment_start_date
             obj.enrollment_end_date = enrollment_end_date
         except ObjectDoesNotExist:
-            return JsonResponse({"success": False, "errorMessage": _("Term was not found")})
+            return JsonResponse({"success": False, "errorMessage": _("Course shift was not found")})
     else:
         obj = CourseShift(
             course_key=course.id,
@@ -149,46 +159,136 @@ def update_course_shifts(request, course):
             enrollment_end_date=enrollment_end_date
         )
     obj.save()
-    return JsonResponse({"success": True, "course_shift": {"id": obj.id}})
+    return JsonResponse({"success": True, "shift": obj.to_dict(add_number_of_students=True)})
 
 
 @login_required
-@check_course_exists
+@check_course_exists(check_staff_permission=True)
 def find_user(request, course):
-    user_token = request.GET.get('user_token')
-
-    user = User.objects.filter(Q(username=user_token)|Q(email=user_token)).first()
-    if user:
+    word = request.GET.get('word')
+    word = word.strip()
+    if not word:
         return JsonResponse({
             "success": False,
-            "user_id": None,
-            "error": _("User not found")
+            "userid": None,
+            "errorMessage": _("Invalid request")
         })
 
     try:
-        obj = CourseShiftUser.objects.filter(user=user)
+        user = User.objects.get(Q(username=word) | Q(email=word))
+    except User.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "userid": None,
+            "errorMessage": _("User not found")
+        })
+
+    enrollment = CourseEnrollment.get_enrollment(user, course.id)
+    if not enrollment:
+        return JsonResponse({
+            "success": False,
+            "userid": None,
+            "errorMessage": _("User must be enrolled to the course")
+        })
+
+    try:
+        obj = CourseShiftUser.objects.get(user=user, course_key=course.id)
         return JsonResponse({
             "success": True,
-            "user_id": user.id,
-            "course_shift": obj.course_shift.to_dict()
+            "userid": user.id,
+            "shift": obj.course_shift.to_dict()
         })
     except CourseShiftUser.DoesNotExist:
         return JsonResponse({
             "success": True,
-            "user_id": user.id,
-            "course_shift": None
+            "userid": user.id,
+            "shift": None
         })
 
 
 @login_required
 @require_POST
-@check_course_exists
+@check_course_exists(check_staff_permission=True)
+@transaction.atomic
 def update_user(request, course):
-    pass
+    try:
+        posted_data = json.loads(request.body.decode('utf-8'))
+    except ValueError:
+        return JsonResponse({"success": False, "errorMessage": _("Invalid request")})
+
+    try:
+        user_id = posted_data.get('user_id', 0)
+    except ValueError:
+        user_id = 0
+
+    try:
+        course_shift_id = posted_data.get('course_shift_id', 0)
+    except ValueError:
+        course_shift_id = 0
+
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "errorMessage": _("User not found")
+        })
+
+    enrollment = CourseEnrollment.get_enrollment(user, course.id)
+    if not enrollment:
+        return JsonResponse({
+            "success": False,
+            "user_id": None,
+            "errorMessage": _("User must be enrolled to the course")
+        })
+
+    try:
+        course_shift = CourseShift.objects.get(pk=course_shift_id, course_key=course.id)
+    except CourseShift.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "errorMessage": _("Course shift not found")
+        })
+
+    CourseShiftUser.objects.filter(user=user, course_key=course.id).delete()
+    new_course_shift_user = CourseShiftUser(
+        user=user,
+        course_key=course.id,
+        course_shift=course_shift)
+    new_course_shift_user.save()
+
+    return JsonResponse({
+        "success": True,
+        "shift": course_shift.to_dict()
+    })
 
 
 @login_required
 @require_POST
-@check_course_exists
+@check_course_exists(check_staff_permission=False)
+@transaction.atomic
 def update_deadlines(request, course):
-    pass
+    enrollment = CourseEnrollment.get_enrollment(request.user, course.id)
+    if not enrollment:
+        return JsonResponse({
+            "success": False,
+            "errorMessage": _("User must be enrolled to the course")
+        })
+
+    allow, course_shift = allow_to_change_deadline(course.id, request.user)
+    if allow:
+        CourseShiftUser.objects.filter(user=request.user, course_key=course.id).delete()
+        new_course_shift_user = CourseShiftUser(
+            user=request.user,
+            course_key=course.id,
+            course_shift=course_shift)
+        new_course_shift_user.save()
+        return JsonResponse({
+            "success": True,
+            "id": new_course_shift_user.id
+        })
+
+    return JsonResponse({
+        "success": False,
+        "errorMessage": _("There is no available shifts")
+    })
