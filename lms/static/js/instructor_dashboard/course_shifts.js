@@ -40,6 +40,7 @@
                 enrollEndDate: '',
                 enrollEndTime: '',
                 numberOfStudents: 0,
+                studioVersion: false,
                 id: 'new' + Date.now()
             });
         };
@@ -102,7 +103,13 @@
                 </tr>';
         };
 
-        CourseShifts.prototype.getItemTpl = function() {
+        CourseShifts.prototype.getItemTpl = function(studioVersion) {
+            var btn = '';
+            if (!studioVersion) {
+                btn = '<button type="button" class="edit-item-%id" data-id="%id">' + gettext("Edit") + '</button>';
+            } else {
+                btn = gettext("Studio version");
+            }
             return '<tr class="field-group field-group-course-start block-%id"> \
                         <td class="field title-field"> \
                           <div>%title</div> \
@@ -119,9 +126,7 @@
                         <td class="field students-num"> \
                           <div>%numberOfStudents</div> \
                         </td> \
-                        <td class="field actions"> \
-                          <button type="button" class="edit-item-%id" data-id="%id">' + gettext("Edit") + '</button>&nbsp; \
-                        </td> \
+                        <td class="field actions">' + btn + '</td> \
                     </tr>';
         };
 
@@ -185,7 +190,8 @@
                 enrollStartTime: enrollStartDateArr[1],
                 enrollEndDate: enrollEndDateArr[0],
                 enrollEndTime: enrollEndDateArr[1],
-                numberOfStudents: value.number_of_students
+                numberOfStudents: value.number_of_students,
+                studioVersion: value.studio_version
             };
         };
 
@@ -256,7 +262,7 @@
             if (editMode) {
                 tpl = this.getEditItemTpl(replaceId !== null && editMode);
             } else {
-                tpl = this.getItemTpl();
+                tpl = this.getItemTpl(value.studioVersion);
             }
 
             tpl = tpl.replace(/%title/g, value.name)
@@ -279,9 +285,9 @@
                 this.$el.find('#start-date-' + value.id).datepicker({'dateFormat': 'yy-mm-dd'});
                 this.$el.find('#enroll-start-date-' + value.id).datepicker({'dateFormat': 'yy-mm-dd'});
                 this.$el.find('#enroll-end-date-' + value.id).datepicker({'dateFormat': 'yy-mm-dd'});
-                this.$el.find('#start-time-' + value.id).timepicker({step: 60, timeFormat: 'H:i'});
-                this.$el.find('#enroll-start-time-' + value.id).timepicker({step: 60, timeFormat: 'H:i'});
-                this.$el.find('#enroll-end-time-' + value.id).timepicker({step: 60, timeFormat: 'H:i'});
+                this.$el.find('#start-time-' + value.id).timepicker({step: 30, timeFormat: 'H:i'});
+                this.$el.find('#enroll-start-time-' + value.id).timepicker({step: 30, timeFormat: 'H:i'});
+                this.$el.find('#enroll-end-time-' + value.id).timepicker({step: 30, timeFormat: 'H:i'});
                 this.$el.find('.save-item-' + value.id).on("click", $.proxy(this, "saveShift"));
                 if (replaceId !== null) {
                     this.$el.find('.cancel-item-' + value.id).on("click", $.proxy(this, "cancelShift"));

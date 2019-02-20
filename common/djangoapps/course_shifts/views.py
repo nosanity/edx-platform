@@ -148,6 +148,9 @@ def update_course_shifts(request, course):
             obj.start_date = start_date
             obj.enrollment_start_date = enrollment_start_date
             obj.enrollment_end_date = enrollment_end_date
+
+            if obj.studio_version:
+                return JsonResponse({"success": False, "errorMessage": _("This shift can't be modified")})
         except ObjectDoesNotExist:
             return JsonResponse({"success": False, "errorMessage": _("Course shift was not found")})
     else:
@@ -156,7 +159,8 @@ def update_course_shifts(request, course):
             name=name,
             start_date=start_date,
             enrollment_start_date=enrollment_start_date,
-            enrollment_end_date=enrollment_end_date
+            enrollment_end_date=enrollment_end_date,
+            studio_version=False
         )
     obj.save()
     return JsonResponse({"success": True, "shift": obj.to_dict(add_number_of_students=True)})

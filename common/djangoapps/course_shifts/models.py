@@ -15,6 +15,7 @@ class CourseShift(models.Model):
     start_date = models.DateTimeField(verbose_name='Start Date', null=False, blank=False)
     enrollment_start_date = models.DateTimeField(verbose_name='Enrollment Start Date', null=False, blank=False)
     enrollment_end_date = models.DateTimeField(verbose_name='EnrollmentStart Date', null=False, blank=False)
+    studio_version = models.BooleanField(verbose_name='Course shift related to studio settings', default=False)
 
     class Meta:
         db_table = 'course_shifts'
@@ -25,7 +26,8 @@ class CourseShift(models.Model):
             'name': self.name,
             'start_date': self.start_date.strftime(SHIFT_DATE_FORMAT),
             'enrollment_start_date': self.enrollment_start_date.strftime(SHIFT_DATE_FORMAT),
-            'enrollment_end_date': self.enrollment_end_date.strftime(SHIFT_DATE_FORMAT)
+            'enrollment_end_date': self.enrollment_end_date.strftime(SHIFT_DATE_FORMAT),
+            'studio_version': self.studio_version
         }
         if add_number_of_students and self.id:
             number_of_students = CourseShiftUser.objects.filter(course_key=self.course_key, course_shift=self).count()
