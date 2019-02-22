@@ -123,23 +123,23 @@ def update_course_shifts(request, course):
             "errorMessage": _("The course start date must be later than the enrollment start date.")
         })
 
-    overlap_items = CourseShift.objects.filter(
-        Q(course_key=course.id,
-          enrollment_start_date__lte=enrollment_start_date,
-          enrollment_end_date__gte=enrollment_start_date) |
-        Q(course_key=course.id,
-          enrollment_start_date__lte=enrollment_end_date,
-          enrollment_end_date__gte=enrollment_end_date))
-
-    if overlap_items:
-        for overlap_item in overlap_items:
-            if (course_shift_id and course_shift_id != overlap_item.id) or course_shift_id is None:
-                overlap_item_dict = overlap_item.to_dict()
-                return JsonResponse({
-                    "success": False,
-                    "errorMessage": _("New course shift interval overlaps with the interval for"
-                                      " \"%(name)s\" (%(enrollment_start_date)s - %(enrollment_end_date)s)" % overlap_item_dict)
-                })
+    #overlap_items = CourseShift.objects.filter(
+    #    Q(course_key=course.id,
+    #      enrollment_start_date__lte=enrollment_start_date,
+    #      enrollment_end_date__gte=enrollment_start_date) |
+    #    Q(course_key=course.id,
+    #      enrollment_start_date__lte=enrollment_end_date,
+    #      enrollment_end_date__gte=enrollment_end_date))
+    #
+    #if overlap_items:
+    #    for overlap_item in overlap_items:
+    #        if (course_shift_id and course_shift_id != overlap_item.id) or course_shift_id is None:
+    #            overlap_item_dict = overlap_item.to_dict()
+    #            return JsonResponse({
+    #                "success": False,
+    #                "errorMessage": _("New course shift interval overlaps with the interval for"
+    #                                  " \"%(name)s\" (%(enrollment_start_date)s - %(enrollment_end_date)s)" % overlap_item_dict)
+    #            })
 
     if course_shift_id:
         try:
@@ -160,7 +160,8 @@ def update_course_shifts(request, course):
             start_date=start_date,
             enrollment_start_date=enrollment_start_date,
             enrollment_end_date=enrollment_end_date,
-            studio_version=False
+            studio_version=False,
+            enabled=True
         )
     obj.save()
     return JsonResponse({"success": True, "shift": obj.to_dict(add_number_of_students=True)})

@@ -76,17 +76,17 @@ def listen_for_course_publish(sender, course_key, **kwargs):  # pylint: disable=
             course_shift = CourseShift(
                 course_key=course_key,
                 name=course_slug,
-                studio_version=True
+                studio_version=True,
+                enabled=True
             )
         course_shift.start_date = course.start if course.start else DEFAULT_START_DATE
-        if course.enrollment_start:
-            course_shift.enrollment_start_date = course.enrollment_start
-        elif course_shift.start_date:
-            course_shift.enrollment_start_date = course_shift.start_date
-        else:
-            course_shift.enrollment_start_date = DEFAULT_START_DATE
+        course_shift.enrollment_start_date = course.enrollment_start if course.enrollment_start \
+            else datetime(2019, 1, 1, tzinfo=UTC)
         course_shift.enrollment_end_date = course.enrollment_end if course.enrollment_end else DEFAULT_START_DATE
         course_shift.save()
+        CourseShift.objects.filter(course_key=course_key).update(enabled=True)
+    else:
+        CourseShift.objects.filter(course_key=course_key).update(enabled=False)
 
 
 @receiver(SignalHandler.library_updated)

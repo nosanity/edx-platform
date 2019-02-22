@@ -95,9 +95,9 @@
         CourseShifts.prototype.getTableHeader = function() {
             return '<tr> \
                 <th class="header title-field">' + gettext("Title") + '</th> \
-                <th class="header date-field">' + gettext("Start Date") + '</th> \
-                <th class="header date-field">' + gettext("Enrollment Start Date") + '</th> \
-                <th class="header date-field">' + gettext("Enrollment End Date") + '</th> \
+                <th class="header date-field">' + gettext("Start Date (UTC)") + '</th> \
+                <th class="header date-field">' + gettext("Enrollment Start Date (UTC)") + '</th> \
+                <th class="header date-field">' + gettext("Enrollment End Date (UTC)") + '</th> \
                 <th class="header students-num">' + gettext("Number of Students") + '</th> \
                 <th class="header actions">' + gettext("Actions") + '</th> \
                 </tr>';
