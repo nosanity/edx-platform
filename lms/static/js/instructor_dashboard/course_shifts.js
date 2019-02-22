@@ -19,6 +19,8 @@
             this.findUserAndCourseShiftsUrl = $(block).data('find-user-and-course-shifts-url');
             this.updateUserCourseShiftUrl = $(block).data('update-user-course-shift-url');
 
+            this.currentUserTZname = moment.tz(moment.tz.guess()).format('z');
+
             this.$el.find('.search-user-and-shift').on("click", $.proxy(this, "searchUser"));
             this.$el.find('.change-user-shift').on("click", $.proxy(this, "updateUser"));
         }
@@ -95,9 +97,9 @@
         CourseShifts.prototype.getTableHeader = function() {
             return '<tr> \
                 <th class="header title-field">' + gettext("Title") + '</th> \
-                <th class="header date-field">' + gettext("Start Date (UTC)") + '</th> \
-                <th class="header date-field">' + gettext("Enrollment Start Date (UTC)") + '</th> \
-                <th class="header date-field">' + gettext("Enrollment End Date (UTC)") + '</th> \
+                <th class="header date-field">' + gettext("Start Date") + ' (' + this.currentUserTZname + ')</th> \
+                <th class="header date-field">' + gettext("Enrollment Start Date") + ' (' + this.currentUserTZname + ')</th> \
+                <th class="header date-field">' + gettext("Enrollment End Date") + ' (' + this.currentUserTZname + ')</th> \
                 <th class="header students-num">' + gettext("Number of Students") + '</th> \
                 <th class="header actions">' + gettext("Actions") + '</th> \
                 </tr>';
@@ -178,18 +180,19 @@
         };
 
         CourseShifts.prototype.prepareShift = function(value) {
-            var startDateArr = value.start_date.split(' ');
-            var enrollStartDateArr = value.enrollment_start_date.split(' ');
-            var enrollEndDateArr = value.enrollment_end_date.split(' ');
+            var startDate = moment.utc(value.start_date, "YYYY-MM-DD HH:mm").local();
+            var enrollStartDate = moment.utc(value.enrollment_start_date, "YYYY-MM-DD HH:mm").local();
+            var enrollEndDate = moment.utc(value.enrollment_end_date, "YYYY-MM-DD HH:mm").local();
+
             return {
                 id: value.id,
                 name: value.name,
-                startDate: startDateArr[0],
-                startTime: startDateArr[1],
-                enrollStartDate: enrollStartDateArr[0],
-                enrollStartTime: enrollStartDateArr[1],
-                enrollEndDate: enrollEndDateArr[0],
-                enrollEndTime: enrollEndDateArr[1],
+                startDate: startDate.format("YYYY-MM-DD"),
+                startTime: startDate.format("HH:mm"),
+                enrollStartDate: enrollStartDate.format("YYYY-MM-DD"),
+                enrollStartTime: enrollStartDate.format("HH:mm"),
+                enrollEndDate: enrollEndDate.format("YYYY-MM-DD"),
+                enrollEndTime: enrollEndDate.format("HH:mm"),
                 numberOfStudents: value.number_of_students,
                 studioVersion: value.studio_version
             };
@@ -386,9 +389,9 @@
 
             var item = {
                 title: title,
-                startDate: startDateTime,
-                enrollStartDate: enrollStartDateTime,
-                enrollEndDate: enrollEndDateTime
+                startDate: startDateTime.utc().format("YYYY-MM-DD HH:mm"),
+                enrollStartDate: enrollStartDateTime.utc().format("YYYY-MM-DD HH:mm"),
+                enrollEndDate: enrollEndDateTime.utc().format("YYYY-MM-DD HH:mm")
             };
 
             if (!isNew) {
