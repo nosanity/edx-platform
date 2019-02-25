@@ -1,0 +1,1 @@
+-e git+https://github.com/miptliot/tp-sso-edx-client.git@multidomain#egg=sso_edx_tp
