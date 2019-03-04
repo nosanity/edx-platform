@@ -83,9 +83,11 @@ from .video_xfields import VideoFields
 # of this particular import silliness. It's just that I haven't made one before,
 # and I was worried about trying it with my deadline constraints.
 try:
-    import edxval.api as edxval_api
+    # import edxval.api as edxval_api
+    import video_evms.api as edxval_api
 except ImportError:
     edxval_api = None
+from video_evms.mixins import VideoModuleEvmsMixin, VideoDescriptorEvmsMixin
 
 try:
     from branding.models import BrandingInfoConfig
@@ -104,7 +106,8 @@ EXPORT_IMPORT_STATIC_DIR = u'static'
 
 
 @XBlock.wants('settings', 'completion')
-class VideoModule(VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, XModule, LicenseMixin):
+class VideoModule(VideoModuleEvmsMixin,
+                  VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, XModule, LicenseMixin):
     """
     XML source example:
         <video show_captions="true"
@@ -189,6 +192,8 @@ class VideoModule(VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, 
         sources = filter(None, self.html5_sources)
 
         download_video_link = None
+        download_video_links_lst = []
+        quality_dict = {"desktop_webm": "SD", "desktop_mp4": "HD"}
         branding_info = None
         youtube_streams = ""
         video_duration = None
@@ -216,6 +221,8 @@ class VideoModule(VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, 
                 # if it doesn't have an encoded video entry for that Video + Profile, the
                 # value will map to `None`
 
+                val_video_urls_helper_dict = {y: x for x, y in val_video_urls.items()}
+
                 # add the non-youtube urls to the list of alternative sources
                 # use the last non-None non-youtube non-hls url as the link to download the video
                 for url in [val_video_urls[p] for p in val_profiles if p != "youtube"]:
@@ -230,6 +237,11 @@ class VideoModule(VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, 
                                 download_video_link = rewritten_link
                             else:
                                 download_video_link = url
+                            quality = val_video_urls_helper_dict.get(download_video_link)
+                            download_video_links_lst.append({
+                                'quality': quality_dict.get(quality),
+                                'link': download_video_link
+                            })
 
                 # set the youtube url
                 if val_video_urls["youtube"]:
@@ -237,7 +249,7 @@ class VideoModule(VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, 
 
                 # get video duration
                 video_data = edxval_api.get_video_info(self.edx_video_id.strip())
-                video_duration = video_data.get('duration')
+                video_duration = video_data.get('duration') if video_data else None
 
             except (edxval_api.ValInternalError, edxval_api.ValVideoNotFoundError):
                 # VAL raises this exception if it can't find data for the edx video ID. This can happen if the
@@ -286,11 +298,11 @@ class VideoModule(VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, 
                 yt_api_key = xblock_settings['YOUTUBE_API_KEY']
 
         poster = None
-        if edxval_api and self.edx_video_id:
-            poster = edxval_api.get_course_video_image_url(
-                course_id=self.runtime.course_id.for_branch(None),
-                edx_video_id=self.edx_video_id.strip()
-            )
+        #if edxval_api and self.edx_video_id:
+        #    poster = edxval_api.get_course_video_image_url(
+        #        course_id=self.runtime.course_id.for_branch(None),
+        #        edx_video_id=self.edx_video_id.strip()
+        #    )
 
         completion_service = self.runtime.service(self, 'completion')
         if completion_service:
@@ -379,6 +391,7 @@ class VideoModule(VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, 
             'display_name': self.display_name_with_default,
             'handout': self.handout,
             'download_video_link': download_video_link,
+            'download_video_links_lst': download_video_links_lst,
             'track': track_url,
             'transcript_download_format': transcript_download_format,
             'transcript_download_formats_list': self.descriptor.fields['transcript_download_format'].values,
@@ -388,7 +401,7 @@ class VideoModule(VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, 
 
 
 @XBlock.wants("request_cache", "settings", "completion")
-class VideoDescriptor(VideoFields, VideoTranscriptsMixin, VideoStudioViewHandlers,
+class VideoDescriptor(VideoDescriptorEvmsMixin, VideoFields, VideoTranscriptsMixin, VideoStudioViewHandlers,
                       TabsEditingDescriptor, EmptyDataRawDescriptor, LicenseMixin):
     """
     Descriptor for `VideoModule`.
@@ -1077,7 +1090,9 @@ class VideoDescriptor(VideoFields, VideoTranscriptsMixin, VideoStudioViewHandler
                 try:
                     val_video_data = edxval_api.get_video_info(self.edx_video_id)
                     # Unfortunately, the VAL API is inconsistent in how it returns the encodings, so remap here.
-                    for enc_vid in val_video_data.pop('encoded_videos'):
+                    if val_video_data is None:
+                        val_video_data = {'encoded_videos': []}
+                    for enc_vid in val_video_data.get('encoded_videos'):
                         if enc_vid['profile'] in video_profile_names:
                             encoded_videos[enc_vid['profile']] = {key: enc_vid[key] for key in ["url", "file_size"]}
                 except edxval_api.ValVideoNotFoundError:

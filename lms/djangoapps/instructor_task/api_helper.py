@@ -415,7 +415,7 @@ def encode_entrance_exam_and_student_input(usage_key, student=None):  # pylint: 
     return task_input, task_key
 
 
-def submit_task(request, task_type, task_class, course_key, task_input, task_key):
+def submit_task(request, task_type, task_class, course_key, task_input, task_key, countdown=None):
     """
     Helper method to submit a task.
 
@@ -438,7 +438,7 @@ def submit_task(request, task_type, task_class, course_key, task_input, task_key
     task_id = instructor_task.task_id
     task_args = [instructor_task.id, _get_xmodule_instance_args(request, task_id)]
     try:
-        task_class.apply_async(task_args, task_id=task_id)
+        task_class.apply_async(task_args, task_id=task_id, countdown=countdown)
 
     except Exception as error:
         _handle_instructor_task_failure(instructor_task, error)

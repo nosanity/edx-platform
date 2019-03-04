@@ -535,6 +535,7 @@ MAKO_TEMPLATE_DIRS_BASE = [
     OPENEDX_ROOT / 'core' / 'djangoapps' / 'dark_lang' / 'templates',
     OPENEDX_ROOT / 'core' / 'lib' / 'license' / 'templates',
     OPENEDX_ROOT / 'features' / 'course_experience' / 'templates',
+    OPENEDX_ROOT / 'eduscaled' / 'lms' / 'grading_policy' / 'templates',
 ]
 
 
@@ -1362,6 +1363,7 @@ proctoring_js = (
         'proctoring/js/views/Backbone.ModalDialog.js',
         'proctoring/js/views/proctored_exam_add_allowance_view.js',
         'proctoring/js/views/proctored_exam_allowance_view.js',
+        'proctoring/js/views/proctored_exam_suspicious_monitor.js',
         'proctoring/js/views/proctored_exam_attempt_view.js',
         'proctoring/js/views/proctored_exam_view.js'
     ] +
@@ -1403,6 +1405,7 @@ base_vendor_js = [
 main_vendor_js = base_vendor_js + [
     'js/vendor/json2.js',
     'js/vendor/jquery-ui.min.js',
+    'js/vendor/timepicker/jquery.timepicker.min.js',
     'js/vendor/jquery.qtip.min.js',
     'js/vendor/jquery.ba-bbq.min.js',
 ]
@@ -1554,6 +1557,7 @@ PIPELINE_CSS = {
             'js/vendor/CodeMirror/codemirror.css',
             'css/vendor/jquery.treeview.css',
             'css/vendor/ui-lightness/jquery-ui-1.8.22.custom.css',
+            'js/vendor/timepicker/jquery.timepicker.css',
         ],
         'output_filename': 'css/lms-style-course-vendor.css',
     },
@@ -3236,6 +3240,12 @@ PROCTORING_BACKEND_PROVIDER = {
     'class': 'edx_proctoring.backends.null.NullBackendProvider',
     'options': {},
 }
+PROCTORING_BACKEND_PROVIDERS = {
+    'default': {
+        'class': 'edx_proctoring.backends.null.NullBackendProvider',
+        'options': {},
+    }
+}
 PROCTORING_SETTINGS = {}
 
 #### Custom Courses for EDX (CCX) configuration
@@ -3408,6 +3418,8 @@ COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = LOW_PRIORITY_QUEUE
 
+############## Settings for Grading type ############################
+EDX_GRADING_TYPE = "sequential"
 
 # Initialize to 'unknown', but read from JSON in aws.py
 EDX_PLATFORM_REVISION = 'unknown'

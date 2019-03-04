@@ -61,6 +61,16 @@ setup(
             "completion = lms.djangoapps.course_api.blocks.transformers.block_completion:BlockCompletionTransformer",
             "load_override_data = lms.djangoapps.course_blocks.transformers.load_override_data:OverrideDataTransformer"
         ],
+        "openedx.grading_policy": [
+            "vertical = openedx.eduscaled.lms.grading_policy.vertical:VerticalGrading",
+            "sequential = openedx.eduscaled.lms.grading_policy.sequential:SequentialGrading",
+        ],
+        "openedx.graders": [
+            "WeightedSubsectionsGrader = openedx.eduscaled.lms.grading_policy.graders.weighted_subs:WeightedSubsectionsGrader",
+            "SingleSectionGrader = openedx.eduscaled.lms.grading_policy.graders.single_section:SingleSectionGrader",
+            "AssignmentFormatGrader = openedx.eduscaled.lms.grading_policy.graders.assignment_format:AssignmentFormatGrader",
+            "WeightedAssignmentFormatGrader = openedx.eduscaled.lms.grading_policy.graders.weighted_assignment_format:WeightedAssignmentFormatGrader",
+        ],
         "openedx.ace.policy": [
             "bulk_email_optout = lms.djangoapps.bulk_email.policies:CourseEmailOptout"
         ],

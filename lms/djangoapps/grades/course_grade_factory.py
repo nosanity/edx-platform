@@ -169,6 +169,7 @@ class CourseGradeFactory(object):
         """
         should_persist = should_persist_grades(course_data.course_key)
 
+        # TODO: update to multigrading
         if should_persist and force_update_subsections:
             prefetch(user, course_data.course_key)
 

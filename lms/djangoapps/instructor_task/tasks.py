@@ -27,6 +27,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_noop
 
 from bulk_email.tasks import perform_delegate_email_batches
+from lms.djangoapps.instructor_task.models import InstructorTask
 from lms.djangoapps.instructor_task.tasks_base import BaseInstructorTask
 from lms.djangoapps.instructor_task.tasks_helper.certs import generate_students_certificates
 from lms.djangoapps.instructor_task.tasks_helper.enrollments import (
@@ -156,6 +157,10 @@ def send_bulk_course_email(entry_id, _xmodule_instance_args):
     # Translators: This is a past-tense verb that is inserted into task progress messages as {action}.
     action_name = ugettext_noop('emailed')
     visit_fcn = perform_delegate_email_batches
+    try:
+        InstructorTask.objects.get(pk=entry_id)
+    except InstructorTask.DoesNotExist:
+        return {}
     return run_main_task(entry_id, visit_fcn, action_name)
 
 

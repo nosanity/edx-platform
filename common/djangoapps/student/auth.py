@@ -6,7 +6,7 @@ to decide whether to check course creator role, and other such functions.
 """
 from ccx_keys.locator import CCXBlockUsageLocator, CCXLocator
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from opaque_keys.edx.locator import LibraryLocator
 
 from student.roles import (
@@ -175,3 +175,17 @@ def _check_caller_authority(caller, role):
     elif isinstance(role, CourseRole):  # instructors can change the roles w/in their course
         if not user_has_role(caller, CourseInstructorRole(role.course_key)):
             raise PermissionDenied
+
+
+def check_special_permissions(user):
+    if not user.is_authenticated():
+        return False
+    try:
+        return True if user.special_permissions else False
+    except ObjectDoesNotExist:
+        return False
+    except AttributeError:
+        # for backwards compatibility (remove in future)
+        if hasattr(settings, 'USERS_WITH_SPECIAL_PERMS_IDS'):
+            return user.id in settings.USERS_WITH_SPECIAL_PERMS_IDS
+        return False

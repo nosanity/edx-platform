@@ -16,7 +16,7 @@ from six import text_type
 from web_fragments.fragment import Fragment
 from xblock.completable import XBlockCompletionMode
 from xblock.core import XBlock
-from xblock.fields import Boolean, Integer, List, Scope, String
+from xblock.fields import Boolean, Integer, List, Scope, String, Dict
 
 from .exceptions import NotFoundError
 from .fields import Date
@@ -125,6 +125,33 @@ class ProctoringFields(object):
         scope=Scope.settings,
     )
 
+    exam_review_checkbox = Dict(
+        display_name=_("exam_review_checkbox"),
+        help=_(
+            "exam_review_checkbox"
+        ),
+        default={
+             "calculator": True,
+             "excel": False,
+             "messengers": False,
+             "absence": False,
+             "books": False,
+             "papersheet": True,
+             "aid": False,
+             "web_sites": False,
+             "voice": False,
+             "gaze_averted": True
+        },
+        scope=Scope.settings,
+    )
+
+    exam_proctoring_system = String(
+        display_name=_("Proctoring system"),
+        help=_(""),
+        default='',
+        scope=Scope.settings,
+    )
+
     def _get_course(self):
         """
         Return course by course id.
@@ -143,6 +170,16 @@ class ProctoringFields(object):
     def is_proctored_exam(self):
         """ Alias the is_proctored_enabled field to the more legible is_proctored_exam """
         return self.is_proctored_enabled
+
+    @property
+    def available_proctoring_services(self):
+        """
+        Returns the list of proctoring services for the course if available, else None
+        """
+        if self._get_course().available_proctoring_services:
+            return [item.strip() for item in self._get_course().available_proctoring_services.split(",")]
+        else:
+            return None
 
     @property
     def allow_proctoring_opt_out(self):
@@ -585,6 +622,10 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
             course_id = self.runtime.course_id
             content_id = self.location
 
+            available_proctoring_services = self.available_proctoring_services
+            if self.exam_proctoring_system and len(available_proctoring_services) > 1:
+                available_proctoring_services = [self.exam_proctoring_system]
+
             context = {
                 'display_name': self.display_name,
                 'default_time_limit_mins': (
@@ -593,6 +634,7 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
                 ),
                 'is_practice_exam': self.is_practice_exam,
                 'allow_proctoring_opt_out': self.allow_proctoring_opt_out,
+                'available_proctoring_services': available_proctoring_services,
                 'due_date': self.due
             }
 

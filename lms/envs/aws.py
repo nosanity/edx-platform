@@ -278,7 +278,7 @@ CELERY_QUEUES.update(
 if ENV_TOKENS.get('COMPREHENSIVE_THEME_DIR', None):
     COMPREHENSIVE_THEME_DIR = ENV_TOKENS.get('COMPREHENSIVE_THEME_DIR')
 
-COMPREHENSIVE_THEME_DIRS = ENV_TOKENS.get('COMPREHENSIVE_THEME_DIRS', COMPREHENSIVE_THEME_DIRS) or []
+#COMPREHENSIVE_THEME_DIRS = ENV_TOKENS.get('COMPREHENSIVE_THEME_DIRS', COMPREHENSIVE_THEME_DIRS) or []
 
 # COMPREHENSIVE_THEME_LOCALE_PATHS contain the paths to themes locale directories e.g.
 # "COMPREHENSIVE_THEME_LOCALE_PATHS" : [
@@ -532,6 +532,10 @@ FILE_UPLOAD_STORAGE_PREFIX = ENV_TOKENS.get('FILE_UPLOAD_STORAGE_PREFIX', FILE_U
 # function in util/query.py, which is useful for very large database reads
 DATABASES = AUTH_TOKENS['DATABASES']
 
+# Hack for using DATABASES only from environ
+if os.environ.get('USE_DATABASE_SETTINGS_ONLY_FROM_ENVIRON'):
+    DATABASES = dict()
+
 # The normal database user does not have enough permissions to run migrations.
 # Migrations are run with separate credentials, given as DB_MIGRATION_*
 # environment variables
@@ -578,7 +582,7 @@ ZENDESK_USER = AUTH_TOKENS.get("ZENDESK_USER")
 ZENDESK_API_KEY = AUTH_TOKENS.get("ZENDESK_API_KEY")
 
 # API Key for inbound requests from Notifier service
-EDX_API_KEY = AUTH_TOKENS.get("EDX_API_KEY")
+EDX_API_KEY = AUTH_TOKENS.get("EDX_API_KEY", '123456')
 
 # Celery Broker
 CELERY_BROKER_TRANSPORT = ENV_TOKENS.get("CELERY_BROKER_TRANSPORT", "")

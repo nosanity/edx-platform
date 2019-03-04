@@ -991,6 +991,7 @@ def _progress(request, course_key, student_id):
         'student': student,
         'credit_course_requirements': _credit_course_requirements(course_key, student),
         'certificate_data': _get_cert_data(student, course, enrollment_mode, course_grade),
+        'progress_summary_template': getattr(course.grading, 'PROGRESS_SUMMARY_TEMPLATE', ''),
     }
     context.update(
         get_experiment_user_metadata_context(
@@ -1337,6 +1338,7 @@ def is_course_passed(student, course, course_grade=None):
     """
     if course_grade is None:
         course_grade = CourseGradeFactory().read(student, course)
+    # TODO: section passed
     return course_grade.passed
 
 

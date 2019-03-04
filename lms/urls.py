@@ -1071,6 +1071,23 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
         )
     ]
 
+from sso_edx_tp import views as sso_edx_tp_views
+urlpatterns += [
+    # Extend API
+    url(r'^api/extended/', include('open_edx_api_extension.urls', namespace='api_extension')),
+    url(r'^social-logout', sso_edx_tp_views.logout, name='social-logout'),
+]
+
+if settings.ORA2_FILEUPLOAD_BACKEND == 'filesystem':
+    import openassessment.fileupload.urls
+    urlpatterns += [
+        url(r'^openassessment/storage', include(openassessment.fileupload.urls)),
+    ]
+
+urlpatterns += [
+    url(r'^', include('sso_edx_tp.sso_api_urls')),
+]
+
 # Branch.io Text Me The App
 if settings.BRANCH_IO_KEY:
     urlpatterns += [

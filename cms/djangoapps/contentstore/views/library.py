@@ -35,6 +35,7 @@ from util.json_request import JsonResponse, JsonResponseBadRequest, expect_json
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import DuplicateCourseError
+from openedx.eduscaled.cms.utils import can_create_library
 
 from .component import CONTAINER_TEMPLATES, get_component_templates
 from .user import user_with_role
@@ -54,7 +55,7 @@ def get_library_creator_status(user):
 
     if not LIBRARIES_ENABLED:
         return False
-    elif user.is_staff:
+    elif user.is_staff or can_create_library(user):
         return True
     elif settings.FEATURES.get('ENABLE_CREATOR_GROUP', False):
         return get_course_creator_status(user) == 'granted'

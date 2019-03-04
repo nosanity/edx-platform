@@ -129,6 +129,7 @@ from lms.envs.common import (
     CONTACT_EMAIL,
 
     DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH,
+    EDX_GRADING_TYPE,
     # Video Image settings
     VIDEO_IMAGE_SETTINGS,
     VIDEO_TRANSCRIPTS_SETTINGS,
@@ -1430,6 +1431,12 @@ MICROSITE_DATABASE_TEMPLATE_CACHE_TTL = 5 * 60
 PROCTORING_BACKEND_PROVIDER = {
     'class': 'edx_proctoring.backends.null.NullBackendProvider',
     'options': {},
+}
+PROCTORING_BACKEND_PROVIDERS = {
+    'default': {
+        'class': 'edx_proctoring.backends.null.NullBackendProvider',
+        'options': {},
+    }
 }
 PROCTORING_SETTINGS = {}
 

@@ -3,7 +3,7 @@
 (function() {
     'use strict';
     var KeywordValidator, PendingInstructorTasks,
-        createEmailContentTable, createEmailMessageViews, createTaskListTable,
+        createEmailContentTable, createEmailDelayContentTable, createEmailMessageViews, createTaskListTable,
         plantTimeout, statusAjaxError;
 
     plantTimeout = function() {
@@ -26,6 +26,10 @@
         return window.InstructorDashboard.util.createEmailContentTable.apply(this, arguments);
     };
 
+    createEmailDelayContentTable = function() {
+        return window.InstructorDashboard.util.createEmailDelayContentTable.apply(this, arguments);
+    };
+
     createEmailMessageViews = function() {
         return window.InstructorDashboard.util.createEmailMessageViews.apply(this, arguments);
     };
@@ -43,17 +47,40 @@
             this.$cohort_targets = this.$send_to.filter('[value^="cohort:"]');
             this.$course_mode_targets = this.$send_to.filter('[value^="track:"]');
             this.$subject = this.$container.find("input[name='subject']");
+            this.$checkbox_send_in_future = this.$container.find("input[name='send_in_future']");
+            this.$datetime_when_to_send = this.$container.find(".datetime_when_to_send");
+            this.$date_when_to_send = this.$container.find("input[name='date_when_to_send']");
+            this.$time_when_to_send = this.$container.find("input[name='time_when_to_send']");
             this.$btn_send = this.$container.find("input[name='send']");
             this.$task_response = this.$container.find('.request-response');
             this.$request_response_error = this.$container.find('.request-response-error');
             this.$content_request_response_error = this.$container.find('.content-request-response-error');
+            this.$scheduled_request_response_error = this.$container.find('.scheduled-request-response-error');
             this.$history_request_response_error = this.$container.find('.history-request-response-error');
             this.$btn_task_history_email = this.$container.find("input[name='task-history-email']");
             this.$btn_task_history_email_content = this.$container.find("input[name='task-history-email-content']");
+            this.$btn_scheduled_emails = this.$container.find("input[name='scheduled-emails-content']");
             this.$table_task_history_email = this.$container.find('.task-history-email-table');
             this.$table_email_content_history = this.$container.find('.content-history-email-table');
+            this.$table_scheduled_email_table = this.$container.find('.content-scheduled-email-table');
             this.$email_content_table_inner = this.$container.find('.content-history-table-inner');
+            this.$email_content_scheduled_table_inner = this.$container.find('.content-scheduled-table-inner');
             this.$email_messages_wrapper = this.$container.find('.email-messages-wrapper');
+            this.$checkbox_send_in_future.click(function() {
+                if($(this).is(":checked")) {
+                    $(sendemail.$datetime_when_to_send).removeClass('hidden');
+                } else {
+                    $(sendemail.$datetime_when_to_send).addClass('hidden');
+                }
+            });
+            $(this.$date_when_to_send).datepicker({
+                minDate: 0,
+                dateFormat: 'dd.mm.yy'
+            });
+            $(this.$time_when_to_send).timepicker({
+                step: 60,
+                timeFormat: 'H:i'
+            });
             this.$btn_send.click(function() {
                 var body, confirmMessage, displayTarget, fullConfirmMessage, message,
                     sendData, subject, successMessage, target, targets, validation, i, len;
@@ -63,6 +90,35 @@
                 sendemail.$send_to.filter(':checked').each(function() {
                     return targets.push(this.value);
                 });
+
+                var dateToSendVal = '';
+                var timeToSendVal = '';
+                var dtSendVal = '';
+                var sentInFuture = '';
+
+                if ($(sendemail.$checkbox_send_in_future).is(":checked")) {
+                    dateToSendVal = $(sendemail.$date_when_to_send).val();
+                    var dateToSend = moment(dateToSendVal, 'DD-MM-YYYY');
+
+                    timeToSendVal = $(sendemail.$time_when_to_send).val();
+                    var timeToSend = moment(timeToSendVal, 'HH:mm');
+
+                    dtSendVal = dateToSendVal + ' ' + timeToSendVal;
+                    var dtSend = moment(dtSendVal, 'DD-MM-YYYY HH:mm');
+
+                    if (!dateToSend.isValid()) {
+                        return alert(gettext('Chosen date is invalid'));  // eslint-disable-line no-alert
+                    }
+                    if (!timeToSend.isValid()) {
+                        return alert(gettext('Chosen time is invalid'));  // eslint-disable-line no-alert
+                    }
+                    if (moment(new Date()).isAfter(dtSend)) {
+                        return alert(gettext("Date and time can't be before the current moment"));  // eslint-disable-line no-alert
+                    }
+
+                    sentInFuture = dtSend.diff(moment(new Date()));
+                    sentInFuture = parseInt(sentInFuture / 1000);   // seconds
+                }
                 if (subject === '') {
                     return alert(gettext('Your message must have a subject.'));  // eslint-disable-line no-alert
                 } else if (body === '') {
@@ -108,7 +164,8 @@
                             action: 'send',
                             send_to: JSON.stringify(targets),
                             subject: subject,
-                            message: body
+                            message: body,
+                            send_in_future: sentInFuture
                         };
                         return $.ajax({
                             type: 'POST',
@@ -153,6 +210,68 @@
                     })
                 });
             });
+            var getScheduledEmails = function() {
+                var url = sendemail.$btn_scheduled_emails.data('endpoint');
+                var removeUrl = sendemail.$btn_scheduled_emails.data('remove-endpoint');
+                sendemail.$scheduled_request_response_error.css({display: 'none'});
+                return $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: url,
+                    success: function(data) {
+                        if (data.emails.length) {
+                            createEmailDelayContentTable(sendemail.$table_scheduled_email_table,
+                                sendemail.$email_content_scheduled_table_inner, data.emails
+                            );
+                            sendemail.$container.find('.email_remove_link').each(function(idx, obj) {
+                                var clickSet = $(obj).attr('clickSet');
+                                if (!clickSet) {
+                                    $(obj).attr('clickSet', '1');
+                                    $(obj).click(function() {
+                                        if (confirm(gettext("Remove scheduled email?"))) {
+                                            $.ajax({
+                                                type: 'POST',
+                                                dataType: 'json',
+                                                url: removeUrl,
+                                                data: {
+                                                    'msg-id': $(obj).data('msg-id')
+                                                },
+                                                success: function(data) {
+                                                    if (data.success) {
+                                                        getScheduledEmails();
+                                                    } else {
+                                                        alert(data.error);
+                                                    }
+                                                },
+                                                error: function() {
+                                                    alert(gettext("Something wrong. Can't remove email"));
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                            return createEmailMessageViews(sendemail.$email_messages_wrapper, data.emails);
+                        } else {
+                            sendemail.$scheduled_request_response_error.text(
+                                gettext("There is no scheduled emails for this course.")
+                            );
+                            return sendemail.$scheduled_request_response_error.css({
+                                display: 'block'
+                            });
+                        }
+                    },
+                    error: statusAjaxError(function() {
+                        sendemail.$scheduled_request_response_error.text(
+                            gettext("There was an error obtaining scheduled emails for this course.")
+                        );
+                        return sendemail.$scheduled_request_response_error.css({
+                            display: 'block'
+                        });
+                    })
+                });
+            };
+            this.$btn_scheduled_emails.click(getScheduledEmails);
             this.$btn_task_history_email_content.click(function() {
                 var url = sendemail.$btn_task_history_email_content.data('endpoint');
                 return $.ajax({

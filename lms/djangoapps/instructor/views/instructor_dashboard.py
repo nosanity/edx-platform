@@ -48,6 +48,7 @@ from openedx.core.djangolib.markup import HTML, Text
 from openedx.core.lib.url_utils import quote_slashes
 from openedx.core.lib.xblock_utils import wrap_xblock
 from shoppingcart.models import Coupon, CourseRegCodeItem, PaidCourseRegistration
+from student.auth import check_special_permissions
 from student.models import CourseEnrollment
 from student.roles import CourseFinanceAdminRole, CourseSalesAdminRole, CourseStaffRole, CourseInstructorRole
 from util.json_request import JsonResponse
@@ -183,8 +184,15 @@ def instructor_dashboard_2(request, course_id):
     can_see_special_exams = course_has_special_exams and user_has_access and settings.FEATURES.get(
         'ENABLE_SPECIAL_EXAMS', False)
 
+    if check_special_permissions(request.user):
+        access['admin'] = True
+        can_see_special_exams = True
+
     if can_see_special_exams:
         sections.append(_section_special_exams(course, access))
+
+    if check_special_permissions(request.user):
+        access['admin'] = False
 
     # Certificates panel
     # This is used to generate example certificates
@@ -692,6 +700,12 @@ def _section_send_email(course, access):
         ),
         'email_content_history_url': reverse(
             'list_email_content', kwargs={'course_id': unicode(course_key)}
+        ),
+        'email_scheduled_url': reverse(
+            'list_scheduled_emails', kwargs={'course_id': unicode(course_key)}
+        ),
+        'email_remove_scheduled_url': reverse(
+            'remove_scheduled_email', kwargs={'course_id': unicode(course_key)}
         ),
     }
     return section_data

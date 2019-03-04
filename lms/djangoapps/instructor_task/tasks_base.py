@@ -56,7 +56,10 @@ class BaseInstructorTask(Task):
         # is the first value passed to all such args, so we'll use that.
         # And we assume that it exists, else we would already have had a failure.
         entry_id = args[0]
-        entry = InstructorTask.objects.get(pk=entry_id)
+        try:
+            entry = InstructorTask.objects.get(pk=entry_id)
+        except InstructorTask.DoesNotExist:
+            return
         # Check to see if any subtasks had been defined as part of this task.
         # If not, then we know that we're done.  (If so, let the subtasks
         # handle updating task_state themselves.)

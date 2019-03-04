@@ -8,7 +8,7 @@ import logging
 import random
 import re
 from collections import Counter
-from smtplib import SMTPConnectError, SMTPDataError, SMTPException, SMTPServerDisconnected
+from smtplib import SMTPConnectError, SMTPDataError, SMTPException, SMTPServerDisconnected, SMTPRecipientsRefused
 from time import sleep
 
 from boto.exception import AWSConnectionError
@@ -31,6 +31,7 @@ from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.core.mail.message import forbid_multi_line_headers
 from django.urls import reverse
+from django.utils.translation import activate as activate_language
 from django.utils.translation import override as override_language
 from django.utils.translation import ugettext as _
 from markupsafe import escape
@@ -48,6 +49,7 @@ from lms.djangoapps.instructor_task.subtasks import (
 )
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.lib.courses import course_image_url
+from openedx.eduscaled.lms.email.util import eduscaled_email, eduscaled_format_address
 from util.date_utils import get_default_time_display
 
 log = logging.getLogger('edx.celery.task')
@@ -60,6 +62,7 @@ SINGLE_EMAIL_FAILURE_ERRORS = (
     SESDomainEndsWithDotError,  # Recipient's email address' domain ends with a period/dot.
     SESIllegalAddressError,  # Raised when an illegal address is encountered.
     SESLocalAddressCharacterError,  # An address contained a control or whitespace character.
+    SMTPRecipientsRefused,  # code 501 from SMTP server
 )
 
 # Exceptions that, if caught, should cause the task to be re-tried.
@@ -143,6 +146,9 @@ def perform_delegate_email_batches(entry_id, course_id, task_input, action_name)
     email_id = task_input['email_id']
     try:
         email_obj = CourseEmail.objects.get(id=email_id)
+        delay = email_obj.get_delay()
+        if delay:
+            email_obj.delay.delete()
     except CourseEmail.DoesNotExist:
         # The CourseEmail object should be committed in the view function before the task
         # is submitted and reaches this point.
@@ -404,7 +410,9 @@ def _get_source_address(course_id, course_title, course_language, truncate=True)
             )
         )
 
-    from_addr = format_address(course_title_no_quotes)
+    if course_language:
+        activate_language(course_language)
+    from_addr = eduscaled_format_address(course_title_no_quotes)
 
     # If the encoded from_addr is longer than 320 characters, reformat,
     # but with the course name rather than course title.
@@ -493,6 +501,9 @@ def _send_course_email(entry_id, email_id, to_list, global_email_context, subtas
     from_addr = course_email.from_addr if course_email.from_addr else \
         _get_source_address(course_email.course_id, course_title, course_language)
 
+    if course_language:
+        activate_language(course_language)
+
     # use the CourseEmailTemplate that was associated with the CourseEmail
     course_email_template = course_email.get_template()
     try:
@@ -521,12 +532,23 @@ def _send_course_email(entry_id, email_id, to_list, global_email_context, subtas
             plaintext_msg = course_email_template.render_plaintext(course_email.text_message, email_context)
             html_msg = course_email_template.render_htmltext(course_email.html_message, email_context)
 
+            # Reconstruct message content for eduscaled template
+            html_msg, plaintext_msg, unsubscribe_headers = eduscaled_email(
+                html_msg,
+                plaintext_msg,
+                email,
+                course_email,
+                course_title,
+                global_email_context['course_url']
+            )
+
             # Create email:
             email_msg = EmailMultiAlternatives(
                 course_email.subject,
                 plaintext_msg,
                 from_addr,
                 [email],
+                headers=unsubscribe_headers,
                 connection=connection
             )
             email_msg.attach_alternative(html_msg, 'text/html')

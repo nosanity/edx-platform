@@ -28,6 +28,7 @@ from .constants import ScoreDatabaseTableEnum
 from .course_grade_factory import CourseGradeFactory
 from .exceptions import DatabaseNotReadyError
 from .services import GradesService
+# TODO: update to multigrading
 from .signals.signals import SUBSECTION_SCORE_CHANGED
 from .subsection_grade_factory import SubsectionGradeFactory
 from .transformer import GradesTransformer
@@ -124,6 +125,7 @@ def compute_grades_for_course(course_key, offset, batch_size, **kwargs):  # pyli
     routing_key=settings.POLICY_CHANGE_GRADES_ROUTING_KEY
 )
 def recalculate_course_and_subsection_grades_for_user(self, **kwargs):  # pylint: disable=unused-argument
+    # TODO: update to multigrading
     """
     Recalculates the course grade and all subsection grades
     for the given ``user`` and ``course_key`` keyword arguments.
@@ -156,6 +158,7 @@ def recalculate_course_and_subsection_grades_for_user(self, **kwargs):  # pylint
     routing_key=settings.RECALCULATE_GRADES_ROUTING_KEY
 )
 def recalculate_subsection_grade_v3(self, **kwargs):
+    # TODO: update to multigrading
     """
     Latest version of the recalculate_subsection_grade task.  See docstring
     for _recalculate_subsection_grade for further description.
@@ -164,6 +167,7 @@ def recalculate_subsection_grade_v3(self, **kwargs):
 
 
 def _recalculate_subsection_grade(self, **kwargs):
+    # TODO: update to multigrading
     """
     Updates a saved subsection grade.
 

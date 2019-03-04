@@ -28,6 +28,17 @@
             <% } %>
         </div>
         <div class="list-fields list-input exam-options">
+            <% if (proctoring_services) { %>
+                <li class="field-input input-select field-proctoring-service">
+                    <label for="proctoring-service"><%- gettext("Proctoring Service") %></label>
+                    <select id="proctoring-service">
+                        <option value="" selected> - </option>
+                        <% for (var i = 0; i < proctoring_services.length; i++) {%>
+                            <option value="<%- proctoring_services[i] %>"><%- proctoring_services[i] %></option>
+                        <% } %>
+                    </select>
+                </li>
+            <% } %>
             <div class="field field-text field-time-limit">
                 <label class="label">
                     <%- gettext('Time Allotted (HH:MM):') %>
@@ -59,6 +70,50 @@
                 <% } %>
                 </p>
             </div>
+
+            <li class="field-exam-review-rules-checkbox">
+                <p><input type="checkbox" id="web_sites"/>
+                <label class="label">
+                    <%- gettext('websites - разрешено пользоваться веб-сайтами (включая поисковые системы)') %>
+                </label></p>
+                <p><input type="checkbox" id="books"/>
+                <label class="label">
+                    <%- gettext('books - разрешено пользоваться книгами') %>
+                </label></p>
+                <p><input type="checkbox" id="papersheet" checked="checked"/>
+                <label class="label">
+                    <%- gettext('paper - разрешено пользоваться бумагой для расчетов') %>
+                </label></p>
+                <p><input type="checkbox" id="messengers"/>
+                <label class="label">
+                    <%- gettext('messengers - разрешено пользоваться мессенджерами') %>
+                </label></p>
+                <p><input type="checkbox" id="calculator" checked="checked"/>
+                <label class="label">
+                    <%- gettext('calculator - разрешено пользоваться калькулятором, встроенным в ОС ') %>
+                </label></p>
+                <p><input type="checkbox" id="excel"/>
+                <label class="label">
+                    <%- gettext('excel - разрешено пользоваться Экселем') %>
+                </label></p>
+                <p><input type="checkbox" id="human_assistant"/>
+                <label class="label">
+                    <%- gettext('human_assistant - разрешена помощь другого человека') %>
+                </label></p>
+                <p><input type="checkbox" id="absence"/>
+                <label class="label">
+                    <%- gettext('absence - разрешено выходить из поля обзора камеры') %>
+                </label></p>
+                <p><input type="checkbox" id="voices"/>
+                <label class="label">
+                    <%- gettext('voices - разрешены разговоры') %>
+                </label></p>
+                <p><input type="checkbox" id="gaze_averted" checked="checked"/>
+                <label class="label">
+                    <%- gettext('gaze_averted - разрешен увод взгляда из области экрана') %>
+                </label></p>
+            </li>
+
         </div>
     </div>
 </form>

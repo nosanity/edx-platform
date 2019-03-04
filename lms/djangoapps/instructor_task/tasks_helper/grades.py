@@ -105,6 +105,7 @@ class _CourseGradeReportContext(object):
 
     @lazy
     def graded_assignments(self):
+        # TODO: update to multigrading
         """
         Returns an OrderedDict that maps an assignment type to a dict of
         subsection-headers and average-header.
@@ -280,6 +281,7 @@ class CourseGradeReport(object):
             upload_csv_to_report_store(error_rows, 'grade_report_err', context.course_id, date)
 
     def _grades_header(self, context):
+        # TODO: update to multigrading
         """
         Returns the applicable grades-related headers for this report.
         """
@@ -304,6 +306,7 @@ class CourseGradeReport(object):
         return grouper(users)
 
     def _user_grades(self, course_grade, context):
+        # TODO: update to multigrading
         """
         Returns a list of grade results for the given course_grade corresponding
         to the headers for this report.
@@ -324,6 +327,7 @@ class CourseGradeReport(object):
         return [course_grade.percent] + _flatten(grade_results)
 
     def _user_subsection_grades(self, course_grade, subsection_headers):
+        # TODO: update to multigrading
         """
         Returns a list of grade results for the given course_grade corresponding
         to the headers for this report.
@@ -529,6 +533,7 @@ class ProblemGradeReport(object):
 
     @classmethod
     def _graded_scorable_blocks_to_header(cls, course):
+        # TODO: update to multigrading
         """
         Returns an OrderedDict that maps a scorable block's id to its
         headers in the final report.

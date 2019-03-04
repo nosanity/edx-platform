@@ -11,6 +11,7 @@ from ccx_keys.locator import CCXLocator
 from xmodule import block_metadata_utils
 
 from .config import assume_zero_if_absent
+# TODO: update to multigrading
 from .subsection_grade import ZeroSubsectionGrade
 from .subsection_grade_factory import SubsectionGradeFactory
 from .scores import compute_percent
@@ -100,6 +101,7 @@ class CourseGradeBase(object):
 
     @lazy
     def problem_scores(self):
+        # TODO: update to multigrading
         """
         Returns a dict of problem scores keyed by their locations.
         """
@@ -174,7 +176,7 @@ class CourseGradeBase(object):
         course = cls._prep_course_for_grading(course)
         return {
             subsection_type: subsection_type_grader
-            for (subsection_type_grader, subsection_type, _)
+            for (subsection_type_grader, subsection_type, _, _)
             in course.grader.subgraders
         }
 
@@ -200,6 +202,7 @@ class CourseGradeBase(object):
         return course
 
     def _get_chapter_grade_info(self, chapter, course_structure):
+        # TODO: update to multigrading
         """
         Helper that returns a dictionary of chapter grade information.
         """
@@ -233,6 +236,7 @@ class ZeroCourseGrade(CourseGradeBase):
     Course Grade class for Zero-value grades when no problems were
     attempted in the course.
     """
+    # TODO: update to multigrading
     def _get_subsection_grade(self, subsection, force_update_subsections=False):
         return ZeroSubsectionGrade(subsection, self.course_data)
 
@@ -243,6 +247,7 @@ class CourseGrade(CourseGradeBase):
     """
     def __init__(self, user, course_data, *args, **kwargs):
         super(CourseGrade, self).__init__(user, course_data, *args, **kwargs)
+        # TODO: update to multigrading
         self._subsection_grade_factory = SubsectionGradeFactory(user, course_data=course_data)
 
     def update(self):
@@ -264,6 +269,7 @@ class CourseGrade(CourseGradeBase):
 
     @lazy
     def attempted(self):
+        # TODO: update to multigrading
         """
         Returns whether any of the subsections in this course
         have been attempted by the student.

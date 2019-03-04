@@ -32,7 +32,11 @@ def HTML(html):                                 # pylint: disable=invalid-name
         )}
 
     """
-    return markupsafe.Markup(html)
+    try:
+        html_safe = markupsafe.Markup(html)
+    except UnicodeDecodeError:
+        html_safe = markupsafe.Markup(html.decode('utf-8'))
+    return html_safe
 
 
 def strip_all_tags_but_br(string_to_strip):

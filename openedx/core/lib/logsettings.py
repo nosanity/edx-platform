@@ -7,6 +7,8 @@ import sys
 import warnings
 from logging.handlers import SysLogHandler
 
+from django.conf import settings
+
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 
@@ -102,6 +104,26 @@ def get_logger_config(log_dir,
             }
         }
     }
+
+    if hasattr(settings, 'RAVEN_CONFIG') and hasattr(settings.RAVEN_CONFIG, 'dsn'):
+        logger_config['handlers'].update({
+            'sentry': {
+                'level': 'ERROR',
+                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            },
+        })
+        logger_config['loggers'].update({
+            'raven': {
+                'level': 'DEBUG',
+                'handlers': ['console', 'sentry'],
+                'propagate': False,
+            },
+            'sentry.errors': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+                'propagate': False,
+            },
+        })
 
     return logger_config
 

@@ -27,6 +27,9 @@ from openedx.core.djangolib.js_utils import js_escaped_string
           <div class="video-player">
               <div id="${id}"></div>
               <h4 class="hd hd-4 video-error is-hidden">${_('No playable video sources found.')}</h4>
+              % if only_original:
+                <h4 class="hd hd-4 video-error">${_('Video compression in progress. Until the end of compression it will not be visible for students.')}</h4>
+              % endif
               <h4 class="hd hd-4 video-hls-error is-hidden">
                   ${_('Your browser does not support this video format. Try using a different browser.')}
               </h4>
@@ -50,9 +53,17 @@ from openedx.core.djangolib.js_utils import js_escaped_string
         % if download_video_link:
         <div class="wrapper-download-video">
             <h4 class="hd hd-5">${_('Video')}</h4>
+            % if download_video_links_lst:
+                % for video_val in download_video_links_lst:
+                    <a class="btn-link video-sources video-download-button" href="${video_val['link']}">
+                        ${_('Download video file')} ${'(' + video_val['quality'] + ')' if video_val['quality'] else ''}
+                    </a><br />
+                % endfor
+            % else:
             <a class="btn-link video-sources video-download-button" href="${download_video_link}">
                 ${_('Download video file')}
             </a>
+            % endif
         </div>
         % endif
         % if track:

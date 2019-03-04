@@ -12,11 +12,35 @@ import sys
 from collections import OrderedDict
 from datetime import datetime
 
+from stevedore.extension import ExtensionManager
+
 from contracts import contract
 from pytz import UTC
 from django.utils.translation import ugettext_lazy as _
 
 log = logging.getLogger("edx.courseware")
+
+
+class UnrecognizedGraderError(Exception):
+    """An error occurred when grader is unavailable."""
+    pass
+
+
+def _get_grader(grader_type):
+    extension = ExtensionManager(namespace='openedx.graders')
+    try:
+        return extension[grader_type].plugin
+    except KeyError:
+        raise UnrecognizedGraderError("Unrecognized grader `{0}`".format(grader_type))
+
+
+def get_assignment_format_grader(is_vertical_grading):
+    grader_type = 'WeightedAssignmentFormatGrader' if is_vertical_grading else 'AssignmentFormatGrader'
+    return _get_grader(grader_type)
+
+
+def get_course_grader():
+    return _get_grader('WeightedSubsectionsGrader')
 
 
 class ScoreBase(object):
@@ -154,7 +178,7 @@ def invalid_args(func, argdict):
     return set(argdict) - set(args)
 
 
-def grader_from_conf(conf):
+def grader_from_conf(conf, enable_vertical_grading=False):
     """
     This creates a CourseGrader from a configuration (such as in course_settings.py).
     The conf can simply be an instance of CourseGrader, in which case no work is done.
@@ -169,9 +193,10 @@ def grader_from_conf(conf):
     for subgraderconf in conf:
         subgraderconf = subgraderconf.copy()
         weight = subgraderconf.pop("weight", 0)
+        passing_grade = subgraderconf.pop("passing_grade", 0)
         try:
             if 'min_count' in subgraderconf:
-                subgrader_class = AssignmentFormatGrader
+                subgrader_class = get_assignment_format_grader(enable_vertical_grading)
             else:
                 raise ValueError("Configuration has no appropriate grader class.")
 
@@ -182,7 +207,7 @@ def grader_from_conf(conf):
                     del subgraderconf[key]
 
             subgrader = subgrader_class(**subgraderconf)
-            subgraders.append((subgrader, subgrader.category, weight))
+            subgraders.append((subgrader, subgrader.category, weight, passing_grade))
 
         except (TypeError, ValueError) as error:
             # Add info and re-raise
@@ -191,7 +216,7 @@ def grader_from_conf(conf):
                    "\n    Error was:\n    " + str(error))
             raise ValueError(msg), None, sys.exc_info()[2]
 
-    return WeightedSubsectionsGrader(subgraders)
+    return get_course_grader()(subgraders)
 
 
 class CourseGrader(object):
@@ -265,7 +290,7 @@ class WeightedSubsectionsGrader(CourseGrader):
     @property
     def sum_of_weights(self):
         sum = 0
-        for _, _, weight in self.subgraders:
+        for _, _, weight, _ in self.subgraders:
             sum += weight
         return sum
 
@@ -274,7 +299,7 @@ class WeightedSubsectionsGrader(CourseGrader):
         section_breakdown = []
         grade_breakdown = OrderedDict()
 
-        for subgrader, assignment_type, weight in self.subgraders:
+        for subgrader, assignment_type, weight, passing_grade, _ in self.subgraders:
             subgrade_result = subgrader.grade(grade_sheet, generate_random_scores)
 
             weighted_percent = subgrade_result['percent'] * weight
@@ -289,11 +314,13 @@ class WeightedSubsectionsGrader(CourseGrader):
                 'percent': weighted_percent,
                 'detail': section_detail,
                 'category': assignment_type,
+                'is_passed': subgrade_result['percent'] >= passing_grade,
             }
 
         return {
             'percent': total_percent,
             'section_breakdown': section_breakdown,
+            'sections_passed': all(section['is_passed'] for section in grade_breakdown.values()),
             'grade_breakdown': grade_breakdown
         }
 

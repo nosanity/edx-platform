@@ -9,6 +9,9 @@ from openedx.core.djangoapps.request_cache import get_cache
 from openedx.core.djangoapps.user_api.errors import UserAPIInternalError, UserNotFound
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preferences
 
+from xmodule.modulestore.django import modulestore
+from util.request import course_id_from_url
+
 RETRIEVABLE_PREFERENCES = {
     'user_timezone': 'time_zone',
     'user_language': 'pref-lang'
@@ -41,6 +44,11 @@ def user_timezone_locale_prefs(request):
                     key: user_preferences.get(pref_name, None)
                     for key, pref_name in RETRIEVABLE_PREFERENCES.iteritems()
                 }
+            course_key = course_id_from_url(request.path)
+            if course_key:
+                course = modulestore().get_course(course_key)
+                if course and hasattr(course, 'language') and course.language:
+                    user_prefs['user_language'] = course.language
 
         cached_value.update(user_prefs)
     return cached_value

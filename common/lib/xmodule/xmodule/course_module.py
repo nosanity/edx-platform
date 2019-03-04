@@ -19,12 +19,16 @@ from pytz import utc
 from six import text_type
 from xblock.fields import Scope, List, String, Dict, Boolean, Integer, Float
 
+from stevedore.extension import ExtensionManager
+
 from xmodule import course_metadata_utils
 from xmodule.course_metadata_utils import DEFAULT_START_DATE
 from xmodule.graders import grader_from_conf
 from xmodule.seq_module import SequenceDescriptor, SequenceModule
 from xmodule.tabs import CourseTabList, InvalidTabsException
 from .fields import Date
+
+from django.conf import settings
 
 log = logging.getLogger(__name__)
 
@@ -43,6 +47,14 @@ DEFAULT_COURSE_VISIBILITY_IN_CATALOG = getattr(
 )
 
 DEFAULT_MOBILE_AVAILABLE = getattr(settings, 'DEFAULT_MOBILE_AVAILABLE', False)
+
+
+ENABLE_VERTICAL_GRADING_BY_DEFAULT = getattr(settings, 'DEFAULT_GRADING_TYPE', 'sequential') == 'vertical'
+
+
+class GradingTypeError(Exception):
+    """An error occurred when grading type is unrecognized."""
+    pass
 
 
 class StringOrDate(Date):
@@ -237,12 +249,14 @@ class CourseFields(object):
                     "drop_count": 2,
                     "short_label": "HW",
                     "weight": 0.15,
+                    "passing_grade": 0,
                 },
                 {
                     "type": "Lab",
                     "min_count": 12,
                     "drop_count": 2,
                     "weight": 0.15,
+                    "passing_grade": 0,
                 },
                 {
                     "type": "Midterm Exam",
@@ -250,6 +264,7 @@ class CourseFields(object):
                     "min_count": 1,
                     "drop_count": 0,
                     "weight": 0.3,
+                    "passing_grade": 0,
                 },
                 {
                     "type": "Final Exam",
@@ -257,6 +272,7 @@ class CourseFields(object):
                     "min_count": 1,
                     "drop_count": 0,
                     "weight": 0.4,
+                    "passing_grade": 0,
                 }
             ],
             "GRADE_CUTOFFS": {
@@ -886,6 +902,18 @@ class CourseFields(object):
         ),
         scope=Scope.settings, default=False
     )
+    available_proctoring_services = String(
+        display_name=_("Available Proctoring services"),
+        help=_("Comma-separated list of services available for this course."),
+        default="",
+        scope=Scope.settings,
+    )
+    enable_vertical_grading = Boolean(
+        display_name=_("Enable vertical grading"),
+        help="",
+        scope=Scope.settings,
+        default=ENABLE_VERTICAL_GRADING_BY_DEFAULT
+    )
 
 
 class CourseModule(CourseFields, SequenceModule):  # pylint: disable=abstract-method
@@ -1097,7 +1125,7 @@ class CourseDescriptor(CourseFields, SequenceDescriptor, LicenseMixin):
 
     @property
     def grader(self):
-        return grader_from_conf(self.raw_grader)
+        return grader_from_conf(self.raw_grader, self.enable_vertical_grading)
 
     @property
     def raw_grader(self):
@@ -1247,6 +1275,22 @@ class CourseDescriptor(CourseFields, SequenceDescriptor, LicenseMixin):
         The lower the number the "newer" the course.
         """
         return course_metadata_utils.sorting_score(self.start, self.advertised_start, self.announcement)
+
+    def _get_grading_type(self):
+        return 'vertical' if self.enable_vertical_grading else 'sequential'
+
+    @lazy
+    def grading(self):
+        """
+        Returns current grading strategy for the course. It is a class that
+        contains methods used for the grading.
+        """
+        name = self._get_grading_type()
+        extension = ExtensionManager(namespace='openedx.grading_policy')
+        try:
+            return extension[name].plugin
+        except KeyError:
+            raise GradingTypeError("Unrecognized grading type `{0}`".format(name))
 
     @staticmethod
     def make_id(org, course, url_name):

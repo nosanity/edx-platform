@@ -2405,6 +2405,7 @@ input[name="subject"] {
 }
 
 .special-allowance-container,
+.suspicious-monitor-container,
 .student-proctored-exam-container {
   .allowance-table,
   .exam-attempts-table {
@@ -2469,6 +2470,11 @@ input[name="subject"] {
           @include text-align(center);
 
           width: ($baseline*8);
+          word-wrap: break-word;
+        }
+
+        &.sessions {
+          @include text-align(center);
           word-wrap: break-word;
         }
 

@@ -1,6 +1,7 @@
 <%page expression_filter="h"/>
 <%inherit file="/main.html" />
 <%namespace name='static' file='/static_content.html'/>
+<%namespace name="progress_table" file="/summary/progress_table.html"/>
 <%def name="online_help_token()"><% return "progress" %></%def>
 <%!
 from course_modes.models import CourseMode
@@ -153,6 +154,10 @@ username = get_enterprise_learner_generic_name(request) or student.username
                         </button>
                     </div>
                 </section>
+                %endif
+
+                %if not course.no_grade or any(grader_conf.get('passing_grade') for grader_conf in course.raw_grader):
+                    ${progress_table.body(grade_summary, course)}
                 %endif
 
                 %if courseware_summary:

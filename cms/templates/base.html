@@ -152,6 +152,7 @@ from openedx.core.release import RELEASE_LINE
           num: "${context_course.location.course | n, js_escaped_string}",
           display_course_number: "${context_course.display_coursenumber | n, js_escaped_string}",
           revision: "${context_course.location.branch | n, js_escaped_string}",
+          enable_vertical_grading: ${context_course.enable_vertical_grading | n, dump_js_escaped_json},
           self_paced: ${ context_course.self_paced | n, dump_js_escaped_json }
         });
       </script>
