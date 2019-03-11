@@ -184,7 +184,7 @@ CONTENTSTORE = {
     "DOC_STORE_CONFIG": {
         "collection": "modulestore",
         "connectTimeoutMS": 2000,
-        "db": "edxapp",
+        "db": os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__db', 'edx'),
         "host": [
             os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__host', '127.0.0.1')
         ],
@@ -192,18 +192,18 @@ CONTENTSTORE = {
         "port": 27017,
         "socketTimeoutMS": 3000,
         "ssl": False,
-        "user": "edxapp"
+        "user": os.getenv('CONTENTSTORE__DOC_STORE_CONFIG__user', 'edx')
     },
     "ENGINE": "xmodule.contentstore.mongo.MongoContentStore",
     "OPTIONS": {
-        "db": "edxapp",
+        "db": os.getenv('CONTENTSTORE__OPTIONS__db', 'edx'),
         "host": [
             os.getenv('CONTENTSTORE__OPTIONS__host', '127.0.0.1')
         ],
         "password": os.getenv('CONTENTSTORE__OPTIONS__password', ''),
         "port": 27017,
         "ssl": False,
-        "user": "edxapp"
+        "user": os.getenv('CONTENTSTORE__OPTIONS__user', 'edx')
     }
 }
 
@@ -213,35 +213,35 @@ DATABASES = {
         "CONN_MAX_AGE": 0,
         "ENGINE": os.getenv('DATABASES__default__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__default__HOST', '127.0.0.1'),
-        "NAME": "edxapp",
+        "NAME": os.getenv('DATABASES__default__db', 'edx'),
         "PASSWORD": os.getenv('DATABASES__default__password', ''),
         "PORT": "3306",
-        "USER": "edxapp001"
+        "USER": os.getenv('DATABASES__default__user', 'edx'),
     },
     "read_replica": {
         "CONN_MAX_AGE": 0,
         "ENGINE": os.getenv('DATABASES__read_replica__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__read_replica__HOST', '127.0.0.1'),
-        "NAME": "edxapp",
+        "NAME": os.getenv('DATABASES__read_replica__db', 'edx'),
         "PASSWORD": os.getenv('DATABASES__read_replica__password', ''),
         "PORT": "3306",
-        "USER": "edxapp001"
+        "USER": os.getenv('DATABASES__read_replica__user', 'edx')
     },
     "student_module_history": {
         "CONN_MAX_AGE": 0,
         "ENGINE": os.getenv('DATABASES__student_module_history__ENGINE', "django.db.backends.mysql"),
         "HOST": os.getenv('DATABASES__student_module_history__HOST', '127.0.0.1'),
-        "NAME": "edxapp_csmh",
+        "NAME": os.getenv('DATABASES__student_module_history__db', 'edx_csmh'),
         "PASSWORD": os.getenv('DATABASES__student_module_history__password', ''),
         "PORT": "3306",
-        "USER": "edxapp001"
+        "USER": os.getenv('DATABASES__student_module_history__user', 'edx')
     }
 }
 
 DOC_STORE_CONFIG = {
     "collection": "modulestore",
     "connectTimeoutMS": 2000,
-    "db": "edxapp",
+    "db": os.getenv('DOC_STORE_CONFIG__db', 'edx'),
     "host": [
         os.getenv('DOC_STORE_CONFIG__host', '127.0.0.1')
     ],
@@ -249,7 +249,7 @@ DOC_STORE_CONFIG = {
     "port": 27017,
     "socketTimeoutMS": 3000,
     "ssl": False,
-    "user": "edxapp"
+    "user": os.getenv('DOC_STORE_CONFIG__user', 'edx')
 }
 
 MODULESTORE = {
@@ -262,7 +262,7 @@ MODULESTORE = {
                     "DOC_STORE_CONFIG": {
                         "collection": "modulestore",
                         "connectTimeoutMS": 2000,
-                        "db": "edxapp",
+                        "db": os.getenv('split__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__db', 'edx'),
                         "host": [
                             os.getenv('split__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__host', '127.0.0.1')
                         ],
@@ -270,7 +270,7 @@ MODULESTORE = {
                         "port": 27017,
                         "socketTimeoutMS": 3000,
                         "ssl": False,
-                        "user": "edxapp"
+                        "user": os.getenv('split__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__user', 'edx')
                     },
                     "ENGINE": "xmodule.modulestore.split_mongo.split_draft.DraftVersioningModuleStore",
                     "NAME": "split",
@@ -284,7 +284,7 @@ MODULESTORE = {
                     "DOC_STORE_CONFIG": {
                         "collection": "modulestore",
                         "connectTimeoutMS": 2000,
-                        "db": "edxapp",
+                        "db": os.getenv('draft__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__db', 'edx'),
                         "host": [
                             os.getenv('draft__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__host', '127.0.0.1')
                         ],
@@ -292,7 +292,7 @@ MODULESTORE = {
                         "port": 27017,
                         "socketTimeoutMS": 3000,
                         "ssl": False,
-                        "user": "edxapp"
+                        "user": os.getenv('draft__MODULESTORE__default__OPTIONS__stores__DOC_STORE_CONFIG__user', 'edx')
                     },
                     "ENGINE": "xmodule.modulestore.mongo.DraftMongoModuleStore",
                     "NAME": "draft",
