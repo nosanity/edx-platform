@@ -1078,7 +1078,7 @@ urlpatterns += [
     url(r'^social-logout', sso_edx_tp_views.logout, name='social-logout'),
 ]
 
-if settings.ORA2_FILEUPLOAD_BACKEND == 'filesystem':
+if getattr(settings, 'ORA2_FILEUPLOAD_BACKEND', '') == 'filesystem':
     import openassessment.fileupload.urls
     urlpatterns += [
         url(r'^openassessment/storage', include(openassessment.fileupload.urls)),

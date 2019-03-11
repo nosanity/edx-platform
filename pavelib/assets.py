@@ -550,7 +550,7 @@ def _compile_sass(system, theme, debug, force, timing_info):
 
         # For Sass files without explicit RTL versions, generate
         # an RTL version of the CSS using the rtlcss library.
-        for sass_file in glob.glob(sass_source_dir + '/**/*.scss'):
+        for sass_file in []:  # FIXME: rtlss not found "glob.glob(sass_source_dir + '/**/*.scss'):"
             if should_generate_rtl_css_file(sass_file):
                 source_css_file = sass_file.replace(sass_source_dir, css_dir).replace('.scss', '.css')
                 target_css_file = source_css_file.replace('.css', '-rtl.css')

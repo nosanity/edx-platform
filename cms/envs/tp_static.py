@@ -15,16 +15,9 @@ CONFIG_PREFIX = SERVICE_VARIANT + "." if SERVICE_VARIANT else ""
 with open(CONFIG_ROOT / CONFIG_PREFIX + "env.json") as env_file:
     ENV_TOKENS = json.load(env_file)
 
-STATIC_URL_BASE = ENV_TOKENS.get('STATIC_URL_BASE')
-if not STATIC_URL_BASE.endswith('/'):
-    STATIC_URL_BASE += '/'
-STATIC_URL = STATIC_URL_BASE.encode('ascii') + EDX_PLATFORM_REVISION + '/'
-
-STATIC_ROOT = path(ENV_TOKENS.get('STATIC_ROOT_BASE')) / EDX_PLATFORM_REVISION
-
 for app in ENV_TOKENS.get('ADDL_INSTALLED_APPS', []):
     INSTALLED_APPS += (app, )
-# FIXME: repeated from tp.py
+# FIXME: duplication from tp.py
 INSTALLED_APPS += (
     'open_edx_api_extension_cms',
     'video_evms',
@@ -33,3 +26,8 @@ INSTALLED_APPS += (
 COMPREHENSIVE_THEME_DIRS = ENV_TOKENS.get('COMPREHENSIVE_THEME_DIRS', COMPREHENSIVE_THEME_DIRS) or []
 
 DEFAULT_GRADING_TYPE = EDX_GRADING_TYPE
+
+LOCALE_PATHS = tuple()
+for T in TEMPLATES:
+    if T['NAME'] == 'mako':
+        T['DIRS'] = MAKO_TEMPLATE_DIRS_BASE
