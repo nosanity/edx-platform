@@ -72,6 +72,7 @@ def course_progress(request, course):
                 'possible': total,
                 'earned': earned,
                 'due': section.due,
+                'format': section.format,
                 'problems': res_problems,
                 'graded': section.graded,
                 'type': 'sequential',
