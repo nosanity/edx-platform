@@ -196,6 +196,9 @@ def _build_support_form_url():
 
 def _footer_navigation_links():
     """Return the navigation links to display in the footer. """
+    navigation_links = configuration_helpers.get_value('navigation_links', None)
+    if navigation_links:
+        return navigation_links
     platform_name = configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME)
     return [
         {
@@ -220,6 +223,9 @@ def _footer_navigation_links():
 
 def _footer_legal_links():
     """Return the legal footer links (e.g. terms of service). """
+    legal_links = configuration_helpers.get_value('legal_links', None)
+    if legal_links:
+        return legal_links
 
     links = [
         ("terms_of_service_and_honor_code", marketing_link("TOS_AND_HONOR"), _("Terms of Service & Honor Code")),
@@ -251,6 +257,10 @@ def _footer_legal_links():
 
 def _footer_business_links():
     """Return the business links to display in the footer. """
+    business_links = configuration_helpers.get_value('business_links', None)
+    if business_links:
+        return business_links
+
     platform_name = configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME)
 
     return [
@@ -312,6 +322,10 @@ def _footer_mobile_links(is_secure):
     Returns: list
 
     """
+    mobile_links = configuration_helpers.get_value('mobile_links', None)
+    if mobile_links:
+        return mobile_links
+
     platform_name = configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME)
 
     mobile_links = []
@@ -347,6 +361,8 @@ def _footer_logo_img(is_secure):
         Absolute url to logo
     """
     logo_name = configuration_helpers.get_value('FOOTER_ORGANIZATION_IMAGE', settings.FOOTER_ORGANIZATION_IMAGE)
+    if logo_name.startswith('http'):
+        return logo_name
     # `logo_name` is looked up from the configuration,
     # which falls back on the Django settings, which loads it from
     # `lms.env.json`, which is created and managed by Ansible. Because of
@@ -468,6 +484,8 @@ def get_logo_url(is_secure=True):
     # let's use that
     image_url = configuration_helpers.get_value('logo_image_url')
     if image_url:
+        if image_url.startswith('http'):
+            return image_url
         return _absolute_url_staticfile(
             is_secure=is_secure,
             name=image_url,

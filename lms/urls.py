@@ -1100,3 +1100,8 @@ if settings.FEATURES.get('ENABLE_API_DOCS'):
     ]
 
 urlpatterns.extend(plugin_urls.get_patterns(plugin_constants.ProjectType.LMS))
+
+if settings.FEATURES.get('ENABLE_COURSE_SHIFTS'):
+    urlpatterns += [
+        url(r'^course-shifts/', include('course_shifts.urls')),
+    ]

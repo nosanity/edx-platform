@@ -3345,7 +3345,7 @@ msgstr ""
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid "Course About Page Image"
-msgstr "Изображение для страницы «О курсе»"
+msgstr "Изображение для страницы «О курсе»"
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
@@ -4462,7 +4462,7 @@ msgstr ""
 
 #: common/lib/xmodule/xmodule/modulestore/inheritance.py
 msgid "Days Early for Beta Users"
-msgstr "Запас времени для бета-тестирования – в днях"
+msgstr "Запас времени для бета-тестирования – в днях"
 
 #: common/lib/xmodule/xmodule/modulestore/inheritance.py
 msgid ""
@@ -7208,7 +7208,7 @@ msgid ""
 "Data in row #{row_num} must have exactly four columns: email, username, full"
 " name, and country"
 msgstr ""
-"В строке № {row_num} должно быть ровно четыре колонки данных: адрес "
+"В строке № {row_num} должно быть ровно четыре колонки данных: адрес "
 "электронной почты, имя пользователя, полное имя и страна"
 
 #: lms/djangoapps/instructor/views/api.py
@@ -14054,7 +14054,7 @@ msgid ""
 msgstr ""
 "Регистрация на платформе «{platform_name}» даёт вам доступ ко всем нашим "
 "текущим и будущим бесплатным курсам. Пока не готовы записаться на курс? При "
-"регистрация вы будете подписаны на нашу рассылку – мы сообщим вам о "
+"регистрация вы будете подписаны на нашу рассылку – мы сообщим вам о "
 "добавлении новых курсов."
 
 #: lms/templates/register-sidebar.html
@@ -23597,7 +23597,7 @@ msgid ""
 "INBOX. Still can't find the verification email? Request help via the link "
 "below."
 msgstr ""
-"Пожалуйста, проверьте папку «Спам», если нашего письма нет в ваших "
+"Пожалуйста, проверьте папку «Спам», если нашего письма нет в ваших "
 "«Входящих». Всё ещё не получается найти письмо? Попросите помощи, пройдя по "
 "ссылке ниже."
 
@@ -26176,3 +26176,72 @@ msgstr ""
 #, python-brace-format
 msgid "\"Course {course_title}\" <{from_email}>"
 msgstr "\"Курс {course_title}\" <{from_email}>"
+
+msgid "Course not found"
+msgstr "Курс не найден"
+
+msgid "Invalid request"
+msgstr "Некорректный запрос"
+
+msgid "Some required fields were not passed"
+msgstr "Заданы не все обязательные поля"
+
+msgid "Invalid Course Shift ID format"
+msgstr "Некорретный формат ID когорты"
+
+msgid "Start date is invalid: "
+msgstr "Некорректное время начала курса: "
+
+msgid "Enrollment start date is invalid: "
+msgstr "Некорректное время начала записи: "
+
+msgid "Enrollment end date is invalid: "
+msgstr "Некорректное время окончания записи: "
+
+msgid "Enrollment end date must be later than the enrollment start date"
+msgstr "Время окончания записи должно быть позже времени старта записи"
+
+msgid "The course start date must be later than the enrollment start date"
+msgstr "Время начала курса должно быть позже времени старта записи"
+
+msgid "This shift can't be modified"
+msgstr "Данная когорта не может быть обновлена"
+
+msgid "Course shift was not found"
+msgstr "Когорта не найдена"
+
+msgid "Course shift not found"
+msgstr "Когорта не найдена"
+
+msgid "User must be enrolled to the course"
+msgstr "Пользователь должен быть записан на курс"
+
+msgid "Your deadlines were successfully updated"
+msgstr "Дедлайны были усмешно обновлены"
+
+msgid "There is no available shifts"
+msgstr "Нет доступных для записи когорт"
+
+msgid "Enable Course Shifts"
+msgstr "Включить когорты"
+
+msgid "Enable Student Change Course Shift"
+msgstr "Разрешить пользователям менять когорты самостоятельно"
+
+msgid "Course Shifts"
+msgstr "Когорты"
+
+msgid "Are you sure you want to reset deadlines?"
+msgstr "Вы уверены что хотите сбросить дедлайны?"
+
+msgid "Update Deadlines"
+msgstr "Сбросить дедлайны"
+
+msgid "Enter user's email or username:"
+msgstr "Введите имя пользователя или его email:"
+
+msgid "Put into course shifts:"
+msgstr "Переместить в когорту:"
+
+msgid "Loading..."
+msgstr "Загрузка..."
