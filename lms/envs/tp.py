@@ -36,8 +36,7 @@ SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
 SOCIAL_AUTH_LOGOUT_URL = '%s/logout/' % SSO_TP_URL
 SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 
-MIDDLEWARE_CLASSES += ('sso_edx_tp.middleware.PLPRedirection',
-                       'sso_edx_tp.middleware.SeamlessAuthorization',)
+MIDDLEWARE_CLASSES += ('sso_edx_tp.middleware.SeamlessAuthorization',)
 
 PLP_URL = ENV_TOKENS.get('PLP_URL')
 if PLP_URL:
